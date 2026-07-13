@@ -4,14 +4,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import ru.skypro.homework.user.Role;
 
-public record Register
-
+public record UpdateUser
         (@Schema(description = "username", example = "username@mail.ru")
          @NotNull(message = "Имя пользователя не может быть пустым")
          String username,
 
          @Schema(description = "password", example = "123abc")
-         @NotNull(message = "Пароль пароль не может быть пустым")
+         @NotNull(message = "Пароль пользователя не может быть пустым")
          String password,
 
          @Schema(description = "firstName", example = "Иван")
@@ -27,5 +26,5 @@ public record Register
          String phone,
 
          @Schema(description = "role", example = "USER")
-         Role role) {
+         Role role){
 }
