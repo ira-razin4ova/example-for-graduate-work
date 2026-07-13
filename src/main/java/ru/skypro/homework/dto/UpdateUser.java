@@ -1,12 +1,13 @@
 package ru.skypro.homework.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import ru.skypro.homework.user.Role;
-
 public record UpdateUser
         (@Schema(description = "username", example = "username@mail.ru")
          @NotNull(message = "Имя пользователя не может быть пустым")
+         @Email(message = "Некорректный формат email")
          String username,
 
          @Schema(description = "password", example = "123abc")
@@ -26,5 +27,5 @@ public record UpdateUser
          String phone,
 
          @Schema(description = "role", example = "USER")
-         Role role){
+         Role role) {
 }

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import ru.skypro.homework.user.Role;
 
+@Schema(description = "Регистрация")
 public record Register
 
         (@Schema(description = "username", example = "username@mail.ru")

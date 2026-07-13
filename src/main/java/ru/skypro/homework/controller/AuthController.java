@@ -11,8 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.dto.Login;
+import ru.skypro.homework.dto.ResponseAnswerRegisterDto;
 import ru.skypro.homework.dto.Register;
-import ru.skypro.homework.dto.UserDto;
 import ru.skypro.homework.service.AuthService;
 
 @Slf4j
@@ -53,10 +53,12 @@ public class AuthController {
             @ApiResponse(responseCode = "201", description = "Пользователь успешно зарегистрирован"),
             @ApiResponse(responseCode = "400", description = "Ошибка валидации или пользователь уже существует")
     })
-    public ResponseEntity<Login> register(
+    public ResponseEntity<ResponseAnswerRegisterDto> register(
             @RequestBody @Valid Register register) {
-        Login userId = authService.register(register);
+        ResponseAnswerRegisterDto userId = authService.register(register);
 
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(userId);
     }
 }

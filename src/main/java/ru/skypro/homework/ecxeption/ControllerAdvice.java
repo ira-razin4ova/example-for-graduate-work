@@ -1,5 +1,9 @@
 package ru.skypro.homework.ecxeption;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -27,118 +31,143 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class ControllerAdvice {
 
-    /**
-     * Обрабатывает ошибки несовпадения типов параметров в URL (Path Variables).
-     * <p>
-     * Метод динамически определяет ожидаемый тип данных (UUID для рекомендаций
-     * или Long/Integer для баланса студентов) и формирует кастомное понятное сообщение
-     * для каждого случая.
-     * </p>
-     *
-     * @param ex исключение несовпадения типов параметров запроса
-     * @return объект {@link ResponseEntity} со статусом 400 (Bad Request) и описанием ошибки
-     */
-
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ApiResponse(
+            responseCode = "400",
+            description = "Параметр пути имеет некорректный тип данных (например, передана строка вместо числа)",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = AnswerErrorDto.class))
+    )
     public ResponseEntity<AnswerErrorDto> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         Class<?> requiredType = ex.getRequiredType();
         String typeName = (requiredType != null) ? requiredType.getSimpleName() : "";
 
         String message = switch (typeName) {
-            case "UUID" ->
-                    String.format("Параметр '%s' должен быть валидным UUID (например, cd515076-5d8a...)", ex.getName());
+            case "UUID" -> String.format("Параметр '%s' должен быть валидным UUID (например, cd515076-5d8a...)", ex.getName());
             case "Long", "Integer" -> String.format("Параметр '%s' должен быть целым числом", ex.getName());
             default -> String.format("Параметр '%s' имеет некорректный тип данных", ex.getName());
         };
 
         AnswerErrorDto error = new AnswerErrorDto(
                 HttpStatus.BAD_REQUEST.name(),
-                "Invalid Path Variable",
+                message,
                 LocalDateTime.now()
         );
 
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    /**
-     * Обрабатывает ошибки чтения JSON-тела запроса.
-     * <p>
-     * Срабатывает, если входящий JSON имеет синтаксические ошибки (нарушена структура),
-     * либо если типы данных в JSON невозможно десериализовать в поля целевого DTO.
-     * </p>
-     *
-     * @param ex исключение синтаксического анализа или чтения HTTP-сообщения
-     * @return объект {@link ResponseEntity} со статусом 400 (Bad Request)
-     */
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ApiResponse(
+            responseCode = "400",
+            description = "Тело запроса содержит некорректный JSON или невозможно десериализовать в DTO",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = AnswerErrorDto.class))
+    )
     public ResponseEntity<AnswerErrorDto> handleReadableException(HttpMessageNotReadableException ex) {
         AnswerErrorDto error = new AnswerErrorDto(
                 HttpStatus.BAD_REQUEST.name(),
                 "Malformed JSON Request",
                 LocalDateTime.now()
         );
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    /**
-     * Обрабатывает вызовы эндпоинтов неподдерживаемыми HTTP-методами.
-     * <p>
-     * Например, если отправлен POST-запрос на адрес, который ожидает исключительно GET.
-     * </p>
-     *
-     * @param ex исключение неподдерживаемого HTTP-метода
-     * @return объект {@link ResponseEntity} со статусом 405 (Method Not Allowed)
-     */
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    @ApiResponse(
+            responseCode = "405",
+            description = "Использован недопустимый HTTP-метод для данного эндпоинта",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = AnswerErrorDto.class))
+    )
     public ResponseEntity<AnswerErrorDto> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
         AnswerErrorDto error = new AnswerErrorDto(
                 HttpStatus.METHOD_NOT_ALLOWED.name(),
                 "Method Not Allowed",
                 LocalDateTime.now()
         );
-        return new ResponseEntity<>(error, HttpStatus.METHOD_NOT_ALLOWED);
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(error);
     }
 
-    /**
-     * Обрабатывает ошибки отсутствия обязательных параметров в строке запроса (Query Parameters).
-     * <p>
-     * Срабатывает, когда в запросе отсутствует параметр, помеченный в контроллере как обязательный.
-     * </p>
-     *
-     * @param ex исключение отсутствия обязательного параметра запроса
-     * @return объект {@link ResponseEntity} со статусом 400 (Bad Request)
-     */
-
     @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ApiResponse(
+            responseCode = "400",
+            description = "Отсутствует обязательный параметр запроса",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = AnswerErrorDto.class))
+    )
     public ResponseEntity<AnswerErrorDto> handleMissingParam(MissingServletRequestParameterException ex) {
         AnswerErrorDto error = new AnswerErrorDto(
                 HttpStatus.BAD_REQUEST.name(),
                 "Missing Parameter",
                 LocalDateTime.now()
         );
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    /**
-     * Обрабатывает ошибки отсутствия ресурса по-указанному URL (404 Not Found).
-     * <p>
-     * Срабатывает, если клиент пытается вызвать эндпоинт, который не зарегистрирован
-     * в контроллерах приложения.
-     * </p>
-     *
-     * @param ex исключение отсутствия ресурса
-     * @return объект {@link ResponseEntity} со статусом 404 (Not Found)
-     */
     @ExceptionHandler(NoResourceFoundException.class)
+    @ApiResponse(
+            responseCode = "404",
+            description = "Запрашиваемый ресурс (URL) не найден",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = AnswerErrorDto.class))
+    )
     public ResponseEntity<AnswerErrorDto> handleNoResourceFound(NoResourceFoundException ex) {
         AnswerErrorDto error = new AnswerErrorDto(
                 HttpStatus.NOT_FOUND.name(),
                 "Resource Not Found",
                 LocalDateTime.now()
         );
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
 
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    @ApiResponse(
+            responseCode = "409",
+            description = "Пользователь уже существует",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = AnswerErrorDto.class))
+    )
+    public ResponseEntity<AnswerErrorDto> handleUserAlreadyExists(UserAlreadyExistsException e) {
+        AnswerErrorDto error = new AnswerErrorDto(
+                "USER_ALREADY_EXISTS",           // code
+                e.getMessage(),                  // message
+                LocalDateTime.now()              // timestamp
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ApiResponse(
+            responseCode = "404",
+            description = "Сущность не найдена",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = AnswerErrorDto.class))
+    )
+    public ResponseEntity<AnswerErrorDto> handleEntityNotFound(EntityNotFoundException e) {
+        AnswerErrorDto error = new AnswerErrorDto(
+                "ENTITY_NOT_FOUND",
+                e.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(UserCreationException.class)
+    @ApiResponse(
+            responseCode = "500",
+            description = "Внутренняя ошибка сервера при создании пользователя",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = AnswerErrorDto.class))
+    )
+    public ResponseEntity<AnswerErrorDto> handleUserCreationException(UserCreationException ex) {
+        AnswerErrorDto error = new AnswerErrorDto(
+                HttpStatus.INTERNAL_SERVER_ERROR.name(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 }
