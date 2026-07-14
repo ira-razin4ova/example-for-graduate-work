@@ -1,4 +1,4 @@
-package ru.skypro.homework.ecxeption;
+package ru.skypro.homework.exception;
 
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

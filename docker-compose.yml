@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  grad-work-db:
+    image: postgres:15-alpine
+    container_name: grad_work_postgres_db  # Уникальное имя контейнера
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: grad_work_db            # Уникальное имя базы данных для этого проекта
+    ports:
+      - "5433:5432"                        # СЛЕВА порт твоего компьютера (5433), СПРАВА порт внутри контейнера (5432)
+    volumes:
+      - grad_work_db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  grad_work_db_data:                       # Уникальное имя тома для хранения данных
