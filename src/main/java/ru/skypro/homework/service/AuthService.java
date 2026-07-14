@@ -1,7 +1,7 @@
 package ru.skypro.homework.service;
 
-import ru.skypro.homework.dto.ResponseAnswerRegisterDto;
-import ru.skypro.homework.dto.Register;
+import ru.skypro.homework.dto.auth.ResponseAnswerRegisterDto;
+import ru.skypro.homework.dto.auth.Register;
 
 public interface AuthService {
     boolean login(String userName, String password);

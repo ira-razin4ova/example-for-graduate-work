@@ -10,16 +10,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.skypro.homework.dto.Login;
-import ru.skypro.homework.dto.ResponseAnswerRegisterDto;
-import ru.skypro.homework.dto.Register;
+import ru.skypro.homework.dto.auth.Login;
+import ru.skypro.homework.dto.auth.ResponseAnswerRegisterDto;
+import ru.skypro.homework.dto.auth.Register;
 import ru.skypro.homework.service.AuthService;
 
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/auth")
 @Tag(name = "Авторизация", description = "Регистрация/авторизация")
 public class AuthController {
 

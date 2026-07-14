@@ -1,4 +1,4 @@
-package ru.skypro.homework.ecxeption;
+package ru.skypro.homework.exception;
 
 public class UserAlreadyExistsException extends RuntimeException {
     public UserAlreadyExistsException(String message) {
