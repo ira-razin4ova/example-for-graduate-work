@@ -34,6 +34,5 @@ public record Register(
 
         @Schema(description = "Роль пользователя", example = "USER")
         @NotNull(message = "Роль обязательна")
-        String role
 ) {
 }
