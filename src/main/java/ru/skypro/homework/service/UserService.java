@@ -9,8 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.skypro.homework.dto.user.UpdateUser;
 import ru.skypro.homework.dto.user.UserDto;
 import ru.skypro.homework.mapper.UserMapper;
+import ru.skypro.homework.model.user.User;
 import ru.skypro.homework.repository.UserRepository;
-import ru.skypro.homework.user.User;
+
 
 @Service
 @RequiredArgsConstructor
@@ -22,8 +23,9 @@ public class UserService {
 
     /**
      * Обновляет информацию о пользователе.
-     * @param id идентификатор пользователя
-     * @param update DTO с новыми данными
+     *
+     * @param id         идентификатор пользователя
+     * @param updateUser DTO с новыми данными
      * @return обновлённый DTO
      * @throws EntityNotFoundException если пользователь не найден
      */
@@ -31,21 +33,20 @@ public class UserService {
     @Transactional
     public UserDto updateUser(
             @Parameter(description = "ID пользователя", example = "1") Long id,
-            @Parameter(description = "Новые данные пользователя") UpdateUser update) {
+            @Parameter(description = "Новые данные пользователя") UpdateUser updateUser) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь для обновления не найден"));
 
-        User updatedUser = userMapper.toEntity(update);
-        updatedUser.setPassword(passwordEncoder.encode(update.password()));
-        updatedUser.setId(user.getId());
-        userRepository.save(updatedUser);
+        userMapper.updateFromDto(updateUser, user);
+        userRepository.save(user);
 
-        return userMapper.toDto(updatedUser);
+        return userMapper.toDto(user);
     }
 
     /**
      * Удаляет пользователя по ID.
+     *
      * @param id идентификатор пользователя
      * @throws EntityNotFoundException если пользователь не найден
      */
