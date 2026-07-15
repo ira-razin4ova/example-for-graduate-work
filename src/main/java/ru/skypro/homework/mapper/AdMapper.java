@@ -14,8 +14,8 @@ public interface AdMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "image", ignore = true)
-    @Mapping(target = "creator", ignore = true)
-    CreateOrUpdateAd toEntity(CreateOrUpdateAd ad);
+    @Mapping(target = "author", ignore = true)
+    Ad toEntity(CreateOrUpdateAd ad);
 
     @Mapping(source = "id", target = "pk")
     @Mapping(source = "author.id", target = "author")
@@ -24,11 +24,8 @@ public interface AdMapper {
     @Mapping(source = "id", target = "pk")
     @Mapping(source = "author.firstName", target = "authorFirstName")
     @Mapping(source = "author.lastName", target = "authorLastName")
-    @Mapping(source = "author.email", target = "email")
+   // @Mapping(source = "author.email", target = "email")
     @Mapping(source = "author.phone", target = "phone")
     ExtendedAd toExtendedDto(Ad entity);
 
-    @Mapping(source = "id", target = "pk")
-    @Mapping(source = "author.id", target = "author")
-    List<AdDto> toDtoList(List<Ad> entity);
 }

@@ -3,13 +3,14 @@ package ru.skypro.homework.service.impl;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skypro.homework.dto.auth.ResponseAnswerRegisterDto;
 import ru.skypro.homework.exception.UserCreationException;
-import ru.skypro.homework.user.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.auth.Register;
 import ru.skypro.homework.exception.UserAlreadyExistsException;
+import ru.skypro.homework.model.user.Role;
+import ru.skypro.homework.model.user.User;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.AuthService;
 
@@ -79,17 +80,17 @@ public class AuthServiceImpl implements AuthService {
         }
 
         User user = User.builder()
-                .username(register.username())
+                .email(register.username())
                 .password(encoder.encode(register.password()))
                 .firstName(register.firstName())
                 .lastName(register.lastName())
                 .phone(register.phone())
-                .role(register.role())
+                .role(Role.valueOf(register.role()))
                 .build();
 
         userRepository.save(user);
 
-        Long userId = userRepository.findByUsername(register.username())
+        Integer userId = userRepository.findByEmail(register.username())
                 .orElseThrow(() -> new UserCreationException(
                         "Не удалось получить ID созданного пользователя"
                 ))

@@ -14,11 +14,11 @@ public interface CommentMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "author", ignore = true)
-    CreateOrUpdateComment toEntity(CreateOrUpdateComment comment);
+Comment toEntity(CreateOrUpdateComment comment);
 
     @Mapping(source = "id", target = "pk")
     @Mapping(source = "author.id", target = "author")
     @Mapping(source = "author.image", target = "authorImage")
     @Mapping(source = "author.firstName", target = "authorFirstName")
-    List<CommentDto> toDtoList(List<Comment> entity);
+    CommentDto toDto(Comment entity);
 }

@@ -11,22 +11,24 @@ import ru.skypro.homework.model.user.User;
 public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "image", ignore = true)
+    @Mapping(source = "username", target = "email")
     User toEntity(Register register);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "username", ignore = true)
+    @Mapping(target = "email", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "image", ignore = true)
     void updateFromDto(UpdateUser updateUser, @MappingTarget User user);
 
-    @Mapping(source = "username", target = "email")
+    //@Mapping(source = "userName", target = "email")
     UserDto toDto(User user);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "username", ignore = true)
+    @Mapping(target = "email", ignore = true)
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "image", ignore = true)
     void updateFromDto(NewPasswordRequestDto newPasswordRequestDto, @MappingTarget User user);

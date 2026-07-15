@@ -2,7 +2,6 @@ package ru.skypro.homework.dto.auth;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
-import ru.skypro.homework.user.Role;
 
 @Schema(description = "Данные для регистрации пользователя")
 public record Register(
@@ -35,6 +34,6 @@ public record Register(
 
         @Schema(description = "Роль пользователя", example = "USER")
         @NotNull(message = "Роль обязательна")
-        Role role
+        String role
 ) {
 }

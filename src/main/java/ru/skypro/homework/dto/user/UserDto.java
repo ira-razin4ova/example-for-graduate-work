@@ -2,7 +2,7 @@ package ru.skypro.homework.dto.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
-import ru.skypro.homework.user.Role;
+import ru.skypro.homework.model.user.Role;
 
 @Builder
 @Schema(description = "Информация о пользователе")
