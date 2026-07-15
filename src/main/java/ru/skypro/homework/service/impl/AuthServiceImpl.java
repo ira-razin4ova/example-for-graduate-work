@@ -1,15 +1,15 @@
 package ru.skypro.homework.service.impl;
 
 import org.springframework.transaction.annotation.Transactional;
-import ru.skypro.homework.dto.ResponseAnswerRegisterDto;
-import ru.skypro.homework.ecxeption.UserCreationException;
+import ru.skypro.homework.dto.auth.ResponseAnswerRegisterDto;
+import ru.skypro.homework.exception.UserCreationException;
 import ru.skypro.homework.user.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
-import ru.skypro.homework.dto.Register;
-import ru.skypro.homework.ecxeption.UserAlreadyExistsException;
+import ru.skypro.homework.dto.auth.Register;
+import ru.skypro.homework.exception.UserAlreadyExistsException;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.AuthService;
 

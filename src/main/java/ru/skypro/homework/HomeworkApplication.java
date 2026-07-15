@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @OpenAPIDefinition
-@EnableJpaRepositories("ru.skypro.homework.repository")
 public class HomeworkApplication {
   public static void main(String[] args) {
     SpringApplication.run(HomeworkApplication.class, args);

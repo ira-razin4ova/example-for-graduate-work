@@ -1,20 +1,17 @@
 package ru.skypro.homework.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.skypro.homework.dto.UpdateUser;
-import ru.skypro.homework.dto.UserDto;
+import ru.skypro.homework.dto.user.UpdateUser;
+import ru.skypro.homework.dto.user.UserDto;
 import ru.skypro.homework.user.User;
 @Component
 public class UserMapper {
 
     public User toEntity(UpdateUser updateUser) {
         return User.builder()
-                .username(updateUser.username())
-                .password(updateUser.password())
                 .firstName(updateUser.firstName())
                 .lastName(updateUser.lastName())
                 .phone(updateUser.phone())
-                .role(updateUser.role())
                 .build();
     }
 
