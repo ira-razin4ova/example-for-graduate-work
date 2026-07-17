@@ -1,11 +1,14 @@
 package ru.skypro.homework.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
+import ru.skypro.homework.dto.ad.CreateOrUpdateAd;
 import ru.skypro.homework.dto.comment.CommentDto;
 import ru.skypro.homework.dto.comment.CreateOrUpdateComment;
 
+import ru.skypro.homework.dto.user.NewPasswordRequestDto;
+import ru.skypro.homework.model.Ad;
 import ru.skypro.homework.model.Comment;
+import ru.skypro.homework.model.user.User;
 
 import java.util.List;
 
@@ -14,11 +17,13 @@ public interface CommentMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "author", ignore = true)
-Comment toEntity(CreateOrUpdateComment comment);
+    Comment toEntity(CreateOrUpdateComment comment);
 
     @Mapping(source = "id", target = "pk")
     @Mapping(source = "author.id", target = "author")
     @Mapping(source = "author.image", target = "authorImage")
     @Mapping(source = "author.firstName", target = "authorFirstName")
     CommentDto toDto(Comment entity);
+
+
 }

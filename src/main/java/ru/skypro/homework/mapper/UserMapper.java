@@ -23,7 +23,6 @@ public interface UserMapper {
     @Mapping(target = "image", ignore = true)
     void updateFromDto(UpdateUser updateUser, @MappingTarget User user);
 
-    //@Mapping(source = "userName", target = "email")
     UserDto toDto(User user);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

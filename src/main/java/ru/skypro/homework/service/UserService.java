@@ -21,6 +21,10 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
+    private User checkUser (Integer id) {
+        return userRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("user not found"));
+    }
+
     /**
      * Обновляет информацию о пользователе.
      *
@@ -32,15 +36,11 @@ public class UserService {
 
     @Transactional
     public UserDto updateUser(
-            @Parameter(description = "ID пользователя", example = "1") Long id,
+            @Parameter(description = "ID пользователя", example = "1") Integer id,
             @Parameter(description = "Новые данные пользователя") UpdateUser updateUser) {
 
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь для обновления не найден"));
-
+        User user = checkUser(id);
         userMapper.updateFromDto(updateUser, user);
-        userRepository.save(user);
-
         return userMapper.toDto(user);
     }
 
@@ -52,9 +52,12 @@ public class UserService {
      */
 
     @Transactional
-    public void deleteUser(Long id) {
-        User user = userRepository.findById(id).
-                orElseThrow(() -> new EntityNotFoundException("Пользователь для удаления не найде"));
+    public void deleteUser(Integer id) {
+        User user = checkUser(id);
         userRepository.delete(user);
     }
+
+    //TODO изменение пароля когда будет готова авторизация
+
+    //TODO "Получить информацию об авторизованном пользователе" когда будет готова авторизация
 }
