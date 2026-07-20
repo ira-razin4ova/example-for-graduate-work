@@ -1,4 +1,4 @@
-package ru.skypro.homework.user;
+package ru.skypro.homework.model.user;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,7 +18,7 @@ public class User {
     private Integer id;
 
     @Column (name = "user_name", unique = true, nullable = false)
-    private String username;
+    private String email;
 
     @Column(name = "password", nullable = false)
     private String password;
@@ -35,4 +35,7 @@ public class User {
     @Column (name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(name = "image")
+    private String image;
 }

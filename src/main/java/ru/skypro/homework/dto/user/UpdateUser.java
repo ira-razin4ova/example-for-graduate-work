@@ -2,7 +2,6 @@ package ru.skypro.homework.dto.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
-import ru.skypro.homework.user.Role;
 
 @Schema(description = "Данные для обновления информации о пользователе")
 public record UpdateUser(

@@ -37,14 +37,13 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Некорректные данные в запросе"),
             @ApiResponse(responseCode = "404", description = "Пользователь не найден")
     })
-    @PutMapping("/{id}")
+    @PostMapping("/{id}")
     public ResponseEntity<UserDto> updateUser(
             @Parameter(description = "ID пользователя", example = "1")
-            @PathVariable @Positive Long id,
+            @PathVariable @Positive Integer id,
             @Valid @RequestBody UpdateUser dto) {
 
-        UserDto updatedUser = userService.updateUser(id, dto);
-        return ResponseEntity.ok(updatedUser);
+        return ResponseEntity.ok(userService.updateUser(id, dto));
     }
 
     @Operation(
@@ -58,8 +57,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(
             @Parameter(description = "ID пользователя", example = "1")
-            @PathVariable @Positive Long id) {
-
+            @PathVariable @Positive Integer id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }

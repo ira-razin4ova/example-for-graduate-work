@@ -1,9 +1,9 @@
-package ru.skypro.homework.dto.announcements;
+package ru.skypro.homework.dto.ad;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Объявление")
-public record Ad(
+public record AdDto(
         @Schema(description = "ID автора объявления", example = "1")
         Integer author,
 
