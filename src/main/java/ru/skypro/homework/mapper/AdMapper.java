@@ -6,8 +6,6 @@ import ru.skypro.homework.dto.ad.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ad.ExtendedAd;
 import ru.skypro.homework.model.Ad;
 
-import java.util.List;
-
 @Mapper(componentModel = "spring")
 public interface AdMapper {
 

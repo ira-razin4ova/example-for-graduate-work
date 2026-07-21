@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.ad.AdDto;
@@ -43,8 +45,9 @@ public class AdController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AdDto> addAd(
             @RequestPart("properties") @Valid CreateOrUpdateAd properties,
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestPart("image") MultipartFile image) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(adService.createAd(properties));
+        return ResponseEntity.status(HttpStatus.CREATED).body(adService.createAd(properties,userDetails));
     }
 
     @Operation(summary = "Получить объявление по ID")
@@ -68,8 +71,8 @@ public class AdController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> removeAd(
-            @Parameter(description = "ID объявления") @PathVariable Integer id) {
-        adService.deleteAd(id);
+            @Parameter(description = "ID объявления") @PathVariable Integer id, UserDetails userDetails) {
+        adService.deleteAd(id, userDetails);
         return ResponseEntity.noContent().build();
     }
 
@@ -83,9 +86,9 @@ public class AdController {
     @PatchMapping("/{id}")
     public ResponseEntity<AdDto> updateAds(
             @Parameter(description = "ID объявления") @PathVariable Integer id,
-            @RequestBody @Valid CreateOrUpdateAd ad) {
+            @RequestBody @Valid CreateOrUpdateAd ad, @AuthenticationPrincipal UserDetails userDetails) {
 
-        return ResponseEntity.ok(adService.updateAd(id, ad));
+        return ResponseEntity.ok(adService.updateAd(id, ad, userDetails));
     }
 
     @Operation(summary = "Получить объявления авторизованного пользователя")
@@ -94,8 +97,9 @@ public class AdController {
             @ApiResponse(responseCode = "401", description = "Не авторизован")
     })
     @GetMapping("/me")
-    public ResponseEntity<AdsDto> getAdsMe() {
-        return ResponseEntity.ok(new AdsDto(0, Collections.emptyList()));
+    public ResponseEntity<AdsDto> getAdsMe(@AuthenticationPrincipal UserDetails userDetails) {
+
+        return ResponseEntity.ok(adService.getListAdUserAuth(userDetails));
     }
 
     @Operation(summary = "Обновить картинку объявления")

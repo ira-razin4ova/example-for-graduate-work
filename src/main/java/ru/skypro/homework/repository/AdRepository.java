@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface AdRepository extends JpaRepository <Ad, Integer>{
 
-    List<Ad> findAllById (Integer id);
+    List<Ad> findAllByAuthorEmail(String email);
 
 }

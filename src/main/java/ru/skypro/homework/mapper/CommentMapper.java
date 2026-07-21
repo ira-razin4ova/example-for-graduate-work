@@ -1,16 +1,9 @@
 package ru.skypro.homework.mapper;
 
 import org.mapstruct.*;
-import ru.skypro.homework.dto.ad.CreateOrUpdateAd;
 import ru.skypro.homework.dto.comment.CommentDto;
 import ru.skypro.homework.dto.comment.CreateOrUpdateComment;
-
-import ru.skypro.homework.dto.user.NewPasswordRequestDto;
-import ru.skypro.homework.model.Ad;
 import ru.skypro.homework.model.Comment;
-import ru.skypro.homework.model.user.User;
-
-import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface CommentMapper {

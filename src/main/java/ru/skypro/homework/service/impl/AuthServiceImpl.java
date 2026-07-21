@@ -1,5 +1,7 @@
 package ru.skypro.homework.service.impl;
 
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skypro.homework.dto.auth.ResponseAnswerRegisterDto;
 import ru.skypro.homework.exception.UserCreationException;
@@ -18,14 +20,11 @@ import ru.skypro.homework.service.AuthService;
 @Transactional (readOnly = true)
 public class AuthServiceImpl implements AuthService {
 
-    private final UserDetailsManager manager;
     private final PasswordEncoder encoder;
     private final UserRepository userRepository;
 
-    public AuthServiceImpl(UserDetailsManager manager,
-                           PasswordEncoder passwordEncoder,
+    public AuthServiceImpl(PasswordEncoder passwordEncoder,
                            UserRepository userRepository) {
-        this.manager = manager;
         this.encoder = passwordEncoder;
         this.userRepository = userRepository;
 
@@ -46,11 +45,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public boolean login(String userName, String password) {
-        if (!manager.userExists(userName)) {
-            return false;
-        }
-        UserDetails userDetails = manager.loadUserByUsername(userName);
-        return encoder.matches(password, userDetails.getPassword());
+        return userRepository.findByEmail(userName)
+                .map(user -> encoder.matches(password, user.getPassword()))
+                .orElse(false);
     }
 
 
@@ -75,7 +72,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public ResponseAnswerRegisterDto register(Register register) {
-        if (manager.userExists(register.username())) {
+        if (userRepository.existsByEmail(register.username())) {
             throw new UserAlreadyExistsException("Пользователь с таким именем уже существует");
         }
 

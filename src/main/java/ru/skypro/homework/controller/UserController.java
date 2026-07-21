@@ -11,8 +11,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.config.UserDetailsServiceImpl;
 import ru.skypro.homework.dto.user.NewPasswordRequestDto;
 import ru.skypro.homework.dto.user.UpdateUser;
 import ru.skypro.homework.dto.user.UserDto;
@@ -30,48 +33,45 @@ public class UserController {
 
     @Operation(
             summary = "Обновить информацию о пользователе",
-            description = "Обновляет данные пользователя по его ID. Пароль будет закодирован перед сохранением."
+            description = "Обновляет данные авторизованного пользователя. Пароль будет закодирован перед сохранением."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Пользователь успешно обновлен"),
             @ApiResponse(responseCode = "400", description = "Некорректные данные в запросе"),
+            @ApiResponse(responseCode = "401", description = "Не авторизован"),
             @ApiResponse(responseCode = "404", description = "Пользователь не найден")
     })
-    @PostMapping("/{id}")
+    @PatchMapping("/me")
     public ResponseEntity<UserDto> updateUser(
-            @Parameter(description = "ID пользователя", example = "1")
-            @PathVariable @Positive Integer id,
-            @Valid @RequestBody UpdateUser dto) {
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Новые данные пользователя")
+            @Valid @RequestBody UpdateUser dto,
 
-        return ResponseEntity.ok(userService.updateUser(id, dto));
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        return ResponseEntity.ok(userService.updateUser(userDetails, dto));
     }
 
-    @Operation(
-            summary = "Удалить пользователя",
-            description = "Удаляет пользователя по его ID"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Пользователь успешно удален"),
-            @ApiResponse(responseCode = "404", description = "Пользователь не найден")
-    })
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(
-            @Parameter(description = "ID пользователя", example = "1")
-            @PathVariable @Positive Integer id) {
-        userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
-    }
 
     @Operation(summary = "Обновить пароль")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Пароль обновлён"),
+            @ApiResponse(responseCode = "400", description = "Некорректные данные в запросе"),
             @ApiResponse(responseCode = "401", description = "Не авторизован"),
-            @ApiResponse(responseCode = "403", description = "Запрещено")
+            @ApiResponse(responseCode = "403", description = "Неверный текущий пароль")
     })
     @PostMapping("/set_password")
-    public ResponseEntity<Void> updatePassword(@Valid @RequestBody NewPasswordRequestDto dto) {
+    public ResponseEntity<Void> updatePassword(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Старый и новый пароль")
+            @Valid @RequestBody NewPasswordRequestDto dto,
+
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        userService.changePassword(dto, userDetails);
         return ResponseEntity.ok().build();
     }
+
 
     @Operation(summary = "Получить информацию об авторизованном пользователе")
     @ApiResponses({
@@ -79,17 +79,28 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Не авторизован")
     })
     @GetMapping("/me")
-    public ResponseEntity<UserDto> getUser() {
-        return ResponseEntity.ok(UserDto.builder().build());
+    public ResponseEntity<UserDto> getUser(
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        return ResponseEntity.ok(userService.infoAuthUser(userDetails));
     }
+
 
     @Operation(summary = "Обновить аватар пользователя")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Аватар обновлён"),
+            @ApiResponse(responseCode = "400", description = "Некорректный файл изображения"),
             @ApiResponse(responseCode = "401", description = "Не авторизован")
     })
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> updateUserImage(@RequestPart("image") MultipartFile image) {
+    public ResponseEntity<Void> updateUserImage(
+            @Parameter(description = "Файл изображения (JPEG/PNG)", required = true)
+            @RequestPart("image") MultipartFile image,
+
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
         return ResponseEntity.ok().build();
     }
 }
