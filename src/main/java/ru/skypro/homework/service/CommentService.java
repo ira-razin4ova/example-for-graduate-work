@@ -9,6 +9,7 @@ import ru.skypro.homework.dto.comment.CommentDto;
 import ru.skypro.homework.dto.comment.CommentsDto;
 import ru.skypro.homework.dto.comment.CreateOrUpdateComment;
 import ru.skypro.homework.mapper.CommentMapper;
+import ru.skypro.homework.model.Ad;
 import ru.skypro.homework.model.Comment;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.CommentRepository;
@@ -39,10 +40,11 @@ public class CommentService {
 
     @Transactional
     public CommentDto createComment(Integer idAd, CreateOrUpdateComment dto, UserDetails userDetails) {
-        checkAdBuId(idAd);
+        Ad ad = adRepository.findById(idAd)
+                .orElseThrow(() -> new EntityNotFoundException("Объявление не найдено"));
 
         Comment comment = commentMapper.toEntity(dto);
-        comment.setId(idAd);
+        comment.setAd(ad);
         comment.setAuthor(userService.checkUser(userDetails.getUsername()));
         commentRepository.save(comment);
         return commentMapper.toDto(comment);
@@ -50,14 +52,13 @@ public class CommentService {
 
     @Transactional
     public CommentDto updateComment(Integer idAd, Integer commentId, CreateOrUpdateComment dto, UserDetails userDetails) {
-        commentRepository.findById(commentId).
-                orElseThrow(() -> new EntityNotFoundException("Неправильный идентификатор комментария"));
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("Неправильный идентификатор комментария"));
         checkAdBuId(idAd);
-
-        Comment comment = commentMapper.toEntity(dto);
         SecurityUtils.checkModifyPermission(comment.getAuthor(), userDetails);
         comment.setText(dto.text());
         commentRepository.save(comment);
+
         return commentMapper.toDto(comment);
     }
 

@@ -2,7 +2,9 @@ package ru.skypro.homework.dto.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 
+@Builder
 @Schema(description = "Данные для обновления информации о пользователе")
 public record UpdateUser(
         @Schema(description = "Имя пользователя", example = "Иван")

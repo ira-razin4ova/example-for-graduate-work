@@ -184,7 +184,7 @@ public class ControllerAdvice {
                 LocalDateTime.now()
         );
 
-        return ResponseEntity.badRequest().body(error);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
     @ExceptionHandler(InvalidOldPasswordException.class)

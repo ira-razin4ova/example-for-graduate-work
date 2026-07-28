@@ -19,7 +19,6 @@ import ru.skypro.homework.dto.ad.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ad.ExtendedAd;
 import ru.skypro.homework.service.AdService;
 
-import java.util.Collections;
 
 @RestController
 @RequestMapping("/ads")
@@ -71,7 +70,8 @@ public class AdController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> removeAd(
-            @Parameter(description = "ID объявления") @PathVariable Integer id, UserDetails userDetails) {
+            @Parameter(description = "ID объявления") @PathVariable Integer id,
+            @AuthenticationPrincipal UserDetails userDetails) {
         adService.deleteAd(id, userDetails);
         return ResponseEntity.noContent().build();
     }
@@ -86,7 +86,8 @@ public class AdController {
     @PatchMapping("/{id}")
     public ResponseEntity<AdDto> updateAds(
             @Parameter(description = "ID объявления") @PathVariable Integer id,
-            @RequestBody @Valid CreateOrUpdateAd ad, @AuthenticationPrincipal UserDetails userDetails) {
+            @RequestBody @Valid CreateOrUpdateAd ad,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
         return ResponseEntity.ok(adService.updateAd(id, ad, userDetails));
     }

@@ -1,7 +1,9 @@
 package ru.skypro.homework.dto.comment;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
+@Builder
 @Schema(description = "Комментарий")
 public record CommentDto(
         @Schema(description = "ID автора комментария", example = "1")

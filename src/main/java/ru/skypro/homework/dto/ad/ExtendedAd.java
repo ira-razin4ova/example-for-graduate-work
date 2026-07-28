@@ -1,6 +1,8 @@
 package ru.skypro.homework.dto.ad;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
+@Builder
 @Schema(description = "Расширенная информация об объявлении")
 public record ExtendedAd(
         @Schema(description = "ID объявления", example = "1")

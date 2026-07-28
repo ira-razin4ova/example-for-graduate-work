@@ -33,7 +33,7 @@ public class CommentController {
             @ApiResponse(responseCode = "401", description = "Не авторизован"),
             @ApiResponse(responseCode = "404", description = "Объявление не найдено")
     })
-    @GetMapping("/ads/{id}/comments")
+    @GetMapping("/{id}/comments")
     public ResponseEntity<CommentsDto> getComments(
             @Parameter(description = "ID объявления", example = "1")
             @PathVariable Integer id

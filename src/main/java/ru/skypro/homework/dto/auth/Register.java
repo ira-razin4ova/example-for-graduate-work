@@ -33,7 +33,7 @@ public record Register(
         String phone,
 
         @Schema(description = "Роль пользователя", example = "USER")
-        @NotNull(message = "Роль обязательна")
+        @NotBlank(message = "Роль обязательна")
         String role
 ) {
 }
