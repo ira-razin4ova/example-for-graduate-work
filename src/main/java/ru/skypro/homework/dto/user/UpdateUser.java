@@ -2,7 +2,16 @@ package ru.skypro.homework.dto.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 
+/**
+ * DTO для обновления информации о пользователе.
+ * <p>
+ * Содержит имя, фамилию и телефон с валидацией форматов.
+ * Телефон должен соответствовать формату +7 XXX XXX-XX-XX.
+ * </p>
+ */
+@Builder
 @Schema(description = "Данные для обновления информации о пользователе")
 public record UpdateUser(
         @Schema(description = "Имя пользователя", example = "Иван")

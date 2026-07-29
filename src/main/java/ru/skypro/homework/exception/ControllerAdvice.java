@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -20,15 +22,12 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import java.time.LocalDateTime;
 
 /**
- * Глобальный обработчик исключений для веб-слоя приложения Starbank.
+ * Глобальный обработчик исключений для веб-слоя приложения.
  * <p>
- * Этот класс перехватывает ошибки, возникающие на этапе обработки запросов контроллерами,
- * изолирует их от клиента и возвращает стандартизированный ответ в формате {@link AnswerErrorDto}.
+ * Перехватывает ошибки, возникающие при обработке запросов контроллерами,
+ * и возвращает стандартизированный ответ в формате {@link AnswerErrorDto}.
  * Предотвращает утечку системных трейсов во внешнюю среду.
  * </p>
- *
- * @author Твоё Irina Razinkova
- * @version 1.0
  */
 
 @RestControllerAdvice
@@ -46,7 +45,8 @@ public class ControllerAdvice {
         String typeName = (requiredType != null) ? requiredType.getSimpleName() : "";
 
         String message = switch (typeName) {
-            case "UUID" -> String.format("Параметр '%s' должен быть валидным UUID (например, cd515076-5d8a...)", ex.getName());
+            case "UUID" ->
+                    String.format("Параметр '%s' должен быть валидным UUID (например, cd515076-5d8a...)", ex.getName());
             case "Long", "Integer" -> String.format("Параметр '%s' должен быть целым числом", ex.getName());
             default -> String.format("Параметр '%s' имеет некорректный тип данных", ex.getName());
         };
@@ -157,6 +157,7 @@ public class ControllerAdvice {
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<AnswerErrorDto> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest request) {
 
@@ -168,6 +169,45 @@ public class ControllerAdvice {
         );
 
         return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<AnswerErrorDto> handleBadCredentials(
+            BadCredentialsException ex, HttpServletRequest request) {
+
+        AnswerErrorDto error = new AnswerErrorDto(
+                HttpStatus.UNAUTHORIZED.name(),
+                "Неверный логин или пароль",
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
+    @ExceptionHandler(InvalidOldPasswordException.class)
+    public ResponseEntity<AnswerErrorDto> handleInvalidOldPassword(
+            InvalidOldPasswordException ex, HttpServletRequest request) {
+
+        AnswerErrorDto error = new AnswerErrorDto(
+                HttpStatus.BAD_REQUEST.name(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<AnswerErrorDto> handleAccessDenied(
+            AccessDeniedException ex, HttpServletRequest request) {
+
+        AnswerErrorDto error = new AnswerErrorDto(
+                HttpStatus.FORBIDDEN.name(),
+                "Недостаточно прав для выполнения операции",
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 
     @ExceptionHandler(UserCreationException.class)

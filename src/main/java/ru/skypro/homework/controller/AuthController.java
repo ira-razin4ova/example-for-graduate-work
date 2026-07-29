@@ -15,6 +15,13 @@ import ru.skypro.homework.dto.auth.ResponseAnswerRegisterDto;
 import ru.skypro.homework.dto.auth.Register;
 import ru.skypro.homework.service.AuthService;
 
+/**
+ * Контроллер для аутентификации и регистрации пользователей.
+ * <p>
+ * Предоставляет endpoints для входа в систему и создания новой учётной записи.
+ * Аутентификация выполняется через Basic Auth.
+ * </p>
+ */
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
@@ -24,6 +31,12 @@ public class AuthController {
 
     private final AuthService authService;
 
+    /**
+     * Выполняет вход пользователя в систему.
+     *
+     * @param login данные для входа (email и пароль)
+     * @return 200 OK при успешной аутентификации, 401 при неверных данных
+     */
     @PostMapping("/login")
     @Operation(
             summary = "Вход в систему",
@@ -42,6 +55,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * Регистрирует нового пользователя в системе.
+     *
+     * @param register данные для регистрации
+     * @return 201 Created с ID созданного пользователя
+     */
     @PostMapping("/register")
     @Operation(
             summary = "Регистрация нового пользователя",

@@ -6,9 +6,21 @@ import ru.skypro.homework.model.Ad;
 
 import java.util.List;
 
+/**
+ * Репозиторий для работы с сущностью {@link Ad}.
+ * <p>
+ * Предоставляет базовые CRUD-операции и методы для поиска объявлений по автору.
+ * </p>
+ */
 @Repository
 public interface AdRepository extends JpaRepository <Ad, Integer>{
 
-    List<Ad> findAllById (Integer id);
+    /**
+     * Возвращает все объявления, созданные пользователем с указанным email.
+     *
+     * @param email email автора
+     * @return список объявлений автора
+     */
+    List<Ad> findAllByAuthorEmail(String email);
 
 }

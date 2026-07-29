@@ -1,7 +1,15 @@
 package ru.skypro.homework.dto.comment;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
+/**
+ * DTO с информацией о комментарии для отображения.
+ * <p>
+ * Содержит ID автора, его аватар и имя, дату создания, ID комментария и текст.
+ * </p>
+ */
+@Builder
 @Schema(description = "Комментарий")
 public record CommentDto(
         @Schema(description = "ID автора комментария", example = "1")

@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 --changeset razinkova:2
-CREATE TABLE IF NOT EXISTS ad (
+CREATE TABLE IF NOT EXISTS ads (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     price INT NOT NULL,
@@ -25,13 +25,18 @@ CREATE TABLE IF NOT EXISTS ad (
 );
 
 --changeset razinkova:3
-CREATE TABLE IF NOT EXISTS comment (
+CREATE TABLE IF NOT EXISTS comments (
     id SERIAL PRIMARY KEY,
     text VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at BIGINT DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000,
     author_id SERIAL,
     ad_id SERIAL,
 
      CONSTRAINT com_user_id FOREIGN KEY (author_id) REFERENCES users (id),
-     CONSTRAINT com_ad_id FOREIGN KEY (ad_id) REFERENCES ad (id)
+     CONSTRAINT com_ad_id FOREIGN KEY (ad_id) REFERENCES ads (id)
 );
+--# 1. Остановить контейнер и удалить том с данными
+  --docker compose down -v
+
+  --# 2. Запустить заново (создастся пустая база)
+ -- docker compose up -d
