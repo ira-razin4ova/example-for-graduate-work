@@ -2,6 +2,13 @@ package ru.skypro.homework.dto.ad;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
+/**
+ * DTO с расширенной информацией об объявлении.
+ * <p>
+ * Содержит все данные объявления, включая полную информацию об авторе:
+ * имя, фамилию, email, телефон, описание, цену и заголовок.
+ * </p>
+ */
 @Builder
 @Schema(description = "Расширенная информация об объявлении")
 public record ExtendedAd(

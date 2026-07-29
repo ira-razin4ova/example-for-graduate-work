@@ -4,6 +4,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 
+/**
+ * DTO со списком комментариев и общим количеством.
+ */
 @Schema(description = "Список комментариев")
 public record CommentsDto(
         @Schema(description = "Общее количество комментариев", example = "10")

@@ -3,6 +3,13 @@ package ru.skypro.homework.dto.auth;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
+/**
+ * DTO для регистрации нового пользователя.
+ * <p>
+ * Содержит все необходимые данные: email, пароль, имя, фамилию, телефон и роль.
+ * Пароль должен быть от 8 до 16 символов, телефон в формате +7 XXX XXX-XX-XX.
+ * </p>
+ */
 @Schema(description = "Данные для регистрации пользователя")
 public record Register(
         @Schema(description = "Логин пользователя", example = "username@mail.ru")

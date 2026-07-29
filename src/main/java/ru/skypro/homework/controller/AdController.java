@@ -20,6 +20,14 @@ import ru.skypro.homework.dto.ad.ExtendedAd;
 import ru.skypro.homework.service.AdService;
 
 
+/**
+ * Контроллер для управления объявлениями.
+ * <p>
+ * Предоставляет endpoints для CRUD-операций с объявлениями,
+ * включая получение списка, создание, обновление, удаление
+ * и управление изображениями объявлений.
+ * </p>
+ */
 @RestController
 @RequestMapping("/ads")
 @RequiredArgsConstructor
@@ -27,6 +35,11 @@ public class AdController {
 
     private final AdService adService;
 
+    /**
+     * Возвращает список всех объявлений.
+     *
+     * @return список объявлений
+     */
     @Operation(summary = "Получить все объявления")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Список объявлений")
@@ -36,6 +49,14 @@ public class AdController {
         return ResponseEntity.ok(adService.getListAd());
     }
 
+    /**
+     * Создаёт новое объявление.
+     *
+     * @param properties  данные объявления
+     * @param userDetails данные авторизованного пользователя
+     * @param image       файл изображения
+     * @return созданное объявление
+     */
     @Operation(summary = "Добавить объявление")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Объявление создано"),
@@ -49,6 +70,12 @@ public class AdController {
         return ResponseEntity.status(HttpStatus.CREATED).body(adService.createAd(properties,userDetails));
     }
 
+    /**
+     * Возвращает расширенную информацию об объявлении по ID.
+     *
+     * @param id ID объявления
+     * @return расширенная информация об объявлении
+     */
     @Operation(summary = "Получить объявление по ID")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Объявление найдено"),
@@ -61,6 +88,12 @@ public class AdController {
         return ResponseEntity.ok(adService.getAdBuId(id));
     }
 
+    /**
+     * Удаляет объявление по ID.
+     *
+     * @param id          ID объявления
+     * @param userDetails данные авторизованного пользователя
+     */
     @Operation(summary = "Удалить объявление")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Удалено"),
@@ -76,6 +109,14 @@ public class AdController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Обновляет объявление по ID.
+     *
+     * @param id          ID объявления
+     * @param ad          новые данные объявления
+     * @param userDetails данные авторизованного пользователя
+     * @return обновлённое объявление
+     */
     @Operation(summary = "Обновить объявление")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Обновлено"),
@@ -92,6 +133,12 @@ public class AdController {
         return ResponseEntity.ok(adService.updateAd(id, ad, userDetails));
     }
 
+    /**
+     * Возвращает список объявлений авторизованного пользователя.
+     *
+     * @param userDetails данные авторизованного пользователя
+     * @return список объявлений пользователя
+     */
     @Operation(summary = "Получить объявления авторизованного пользователя")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Список объявлений"),
@@ -103,6 +150,13 @@ public class AdController {
         return ResponseEntity.ok(adService.getListAdUserAuth(userDetails));
     }
 
+    /**
+     * Обновляет изображение объявления.
+     *
+     * @param id    ID объявления
+     * @param image новый файл изображения
+     * @return обновлённое изображение
+     */
     @Operation(summary = "Обновить картинку объявления")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Картинка обновлена"),

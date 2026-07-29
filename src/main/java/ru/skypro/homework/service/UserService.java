@@ -18,6 +18,13 @@ import ru.skypro.homework.model.user.User;
 import ru.skypro.homework.repository.UserRepository;
 
 
+/**
+ * Сервис для работы с пользователями.
+ * <p>
+ * Содержит бизнес-логику по управлению пользователями: получение информации,
+ * обновление данных и смена пароля.
+ * </p>
+ */
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -26,10 +33,25 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * Находит пользователя по email или выбрасывает исключение.
+     *
+     * @param userName email пользователя
+     * @return найденный пользователь
+     * @throws jakarta.persistence.EntityNotFoundException если пользователь не найден
+     */
     public User checkUser(String userName) {
         return userRepository.findByEmail(userName).orElseThrow(() -> new EntityNotFoundException("user not found"));
     }
 
+    /**
+     * Обновляет данные авторизованного пользователя.
+     *
+     * @param userDetails данные авторизованного пользователя
+     * @param updateUser  новые данные для обновления
+     * @return {@link UserDto} с обновлёнными данными
+     * @throws org.springframework.security.access.AccessDeniedException если email из запроса не совпадает с авторизованным
+     */
     @Transactional
     public UserDto updateUser(
             UserDetails userDetails,
@@ -43,13 +65,26 @@ public class UserService {
         return userMapper.toDto(user);
     }
 
+    /**
+     * Возвращает информацию об авторизованном пользователе.
+     *
+     * @param userDetails данные авторизованного пользователя
+     * @return {@link UserDto} с информацией о пользователе
+     */
     @Transactional
     public UserDto infoAuthUser(UserDetails userDetails) {
         User user = checkUser(userDetails.getUsername());
         return userMapper.toDto(user);
     }
 
-
+    /**
+     * Меняет пароль авторизованного пользователя.
+     *
+     * @param newPasswordRequestDto запрос с текущим и новым паролем
+     * @param userDetails          данные авторизованного пользователя
+     * @throws AccessDeniedException       если email не совпадает с авторизованным
+     * @throws InvalidOldPasswordException если текущий пароль неверен
+     */
     @Transactional
     public void changePassword(NewPasswordRequestDto newPasswordRequestDto, UserDetails userDetails) {
         User user = checkUser(userDetails.getUsername());

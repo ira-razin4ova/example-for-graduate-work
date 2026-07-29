@@ -4,6 +4,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import ru.skypro.homework.model.user.Role;
 
+/**
+ * DTO с информацией о пользователе для отображения.
+ * <p>
+ * Содержит основные данные пользователя: ID, email, имя, фамилию,
+ * телефон, роль и ссылку на аватар.
+ * </p>
+ */
 @Builder
 @Schema(description = "Информация о пользователе")
 public record UserDto(

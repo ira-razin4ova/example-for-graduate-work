@@ -17,6 +17,13 @@ import ru.skypro.homework.util.SecurityUtils;
 
 import java.util.List;
 
+/**
+ * Сервис для работы с комментариями.
+ * <p>
+ * Содержит бизнес-логику по управлению комментариями к объявлениям:
+ * получение, создание, обновление и удаление.
+ * </p>
+ */
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -28,6 +35,12 @@ public class CommentService {
 
     private final UserService userService;
 
+    /**
+     * Возвращает список комментариев для указанного объявления.
+     *
+     * @param idAd ID объявления
+     * @return {@link CommentsDto} со списком комментариев
+     */
     public CommentsDto getListComments(Integer idAd) {
         checkAdBuId(idAd);
         List<Comment> commentList = commentRepository.findAllByAd_Id(idAd);
@@ -38,6 +51,14 @@ public class CommentService {
         return new CommentsDto(commentList.size(), commentsDto);
     }
 
+    /**
+     * Создаёт новый комментарий к объявлению от имени авторизованного пользователя.
+     *
+     * @param idAd        ID объявления
+     * @param dto         данные комментария
+     * @param userDetails данные авторизованного пользователя
+     * @return {@link CommentDto} созданного комментария
+     */
     @Transactional
     public CommentDto createComment(Integer idAd, CreateOrUpdateComment dto, UserDetails userDetails) {
         Ad ad = adRepository.findById(idAd)
@@ -50,6 +71,15 @@ public class CommentService {
         return commentMapper.toDto(comment);
     }
 
+    /**
+     * Обновляет комментарий (только автор или администратор).
+     *
+     * @param idAd        ID объявления
+     * @param commentId   ID комментария
+     * @param dto         новые данные комментария
+     * @param userDetails данные авторизованного пользователя
+     * @return {@link CommentDto} с обновлёнными данными
+     */
     @Transactional
     public CommentDto updateComment(Integer idAd, Integer commentId, CreateOrUpdateComment dto, UserDetails userDetails) {
         Comment comment = commentRepository.findById(commentId)
@@ -62,6 +92,13 @@ public class CommentService {
         return commentMapper.toDto(comment);
     }
 
+    /**
+     * Удаляет комментарий (только автор или администратор).
+     *
+     * @param idAd        ID объявления
+     * @param idComment   ID комментария
+     * @param userDetails данные авторизованного пользователя
+     */
     @Transactional
     public void deleteComment(Integer idAd, Integer idComment, UserDetails userDetails) {
         Comment comment = commentRepository.findById(idComment).
@@ -73,6 +110,12 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
+    /**
+     * Проверяет существование объявления по ID.
+     *
+     * @param idAd ID объявления
+     * @throws jakarta.persistence.EntityNotFoundException если объявление не найдено
+     */
     private void checkAdBuId(Integer idAd) {
         adRepository.findById(idAd).orElseThrow(() -> new EntityNotFoundException("Объявление не найдено"));
     }

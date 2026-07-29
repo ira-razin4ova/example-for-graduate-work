@@ -6,6 +6,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+/**
+ * DTO для входа в систему.
+ * <p>
+ * Содержит email (логин) и пароль с валидацией форматов.
+ * </p>
+ */
 @Schema(description = "Данные для входа в систему")
 public record Login(
         @Schema(description = "Логин пользователя", example = "username@mail.ru")

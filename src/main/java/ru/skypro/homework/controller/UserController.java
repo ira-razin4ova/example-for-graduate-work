@@ -21,6 +21,13 @@ import ru.skypro.homework.dto.user.UpdateUser;
 import ru.skypro.homework.dto.user.UserDto;
 import ru.skypro.homework.service.UserService;
 
+/**
+ * Контроллер для управления пользователями.
+ * <p>
+ * Предоставляет endpoints для получения и обновления информации об авторизованном пользователе,
+ * смены пароля и загрузки аватара.
+ * </p>
+ */
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
@@ -31,6 +38,13 @@ public class UserController {
 
     private final UserService userService;
 
+    /**
+     * Обновляет информацию об авторизованном пользователе.
+     *
+     * @param dto         новые данные пользователя
+     * @param userDetails данные авторизованного пользователя
+     * @return {@link UserDto} с обновлённой информацией
+     */
     @Operation(
             summary = "Обновить информацию о пользователе",
             description = "Обновляет данные авторизованного пользователя. Пароль будет закодирован перед сохранением."
@@ -52,7 +66,12 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(userDetails, dto));
     }
 
-
+    /**
+     * Меняет пароль авторизованного пользователя.
+     *
+     * @param dto         запрос с текущим и новым паролем
+     * @param userDetails данные авторизованного пользователя
+     */
     @Operation(summary = "Обновить пароль")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Пароль обновлён"),
@@ -72,7 +91,12 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-
+    /**
+     * Возвращает информацию об авторизованном пользователе.
+     *
+     * @param userDetails данные авторизованного пользователя
+     * @return {@link UserDto} с информацией о пользователе
+     */
     @Operation(summary = "Получить информацию об авторизованном пользователе")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Информация о пользователе"),
@@ -86,7 +110,12 @@ public class UserController {
         return ResponseEntity.ok(userService.infoAuthUser(userDetails));
     }
 
-
+    /**
+     * Обновляет аватар авторизованного пользователя.
+     *
+     * @param image       файл изображения (JPEG/PNG)
+     * @param userDetails данные авторизованного пользователя
+     */
     @Operation(summary = "Обновить аватар пользователя")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Аватар обновлён"),

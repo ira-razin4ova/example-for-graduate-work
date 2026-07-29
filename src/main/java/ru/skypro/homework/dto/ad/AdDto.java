@@ -3,6 +3,12 @@ package ru.skypro.homework.dto.ad;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
+/**
+ * DTO с информацией об объявлении для отображения в списке.
+ * <p>
+ * Содержит ID автора, ссылку на изображение, ID объявления, цену и заголовок.
+ * </p>
+ */
 @Builder
 @Schema(description = "Объявление")
 public record AdDto(

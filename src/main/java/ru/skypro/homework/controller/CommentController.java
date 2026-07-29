@@ -19,6 +19,13 @@ import ru.skypro.homework.service.CommentService;
 
 import java.util.Collections;
 
+/**
+ * Контроллер для управления комментариями к объявлениям.
+ * <p>
+ * Предоставляет endpoints для получения, создания, обновления и удаления комментариев.
+ * Комментарии привязаны к конкретным объявлениям через их ID.
+ * </p>
+ */
 @RestController
 @RequestMapping("/ads")
 @Tag(name = "Комментарии", description = "API для работы с комментариями")
@@ -27,6 +34,12 @@ public class CommentController {
 
     private final CommentService commentService;
 
+    /**
+     * Возвращает список комментариев для указанного объявления.
+     *
+     * @param id ID объявления
+     * @return список комментариев
+     */
     @Operation(summary = "Получить комментарии объявления")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Список комментариев"),
@@ -41,6 +54,14 @@ public class CommentController {
         return ResponseEntity.ok(commentService.getListComments(id));
     }
 
+    /**
+     * Добавляет новый комментарий к объявлению.
+     *
+     * @param id          ID объявления
+     * @param comment     данные комментария
+     * @param userDetails данные авторизованного пользователя
+     * @return созданный комментарий
+     */
     @Operation(summary = "Добавить комментарий")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Комментарий добавлен"),
@@ -65,6 +86,13 @@ public class CommentController {
                 .body(commentService.createComment(id, comment, userDetails));
     }
 
+    /**
+     * Удаляет комментарий по ID.
+     *
+     * @param adId        ID объявления
+     * @param commentId   ID комментария
+     * @param userDetails данные авторизованного пользователя
+     */
     @Operation(summary = "Удалить комментарий")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Комментарий удалён"),
@@ -87,6 +115,15 @@ public class CommentController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Обновляет существующий комментарий.
+     *
+     * @param adId        ID объявления
+     * @param commentId   ID комментария
+     * @param comment     новые данные комментария
+     * @param userDetails данные авторизованного пользователя
+     * @return обновлённый комментарий
+     */
     @Operation(summary = "Обновить комментарий")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Комментарий обновлён"),

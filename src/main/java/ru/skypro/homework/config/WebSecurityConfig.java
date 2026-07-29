@@ -15,6 +15,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 
+/**
+ * Конфигурация безопасности Spring Security.
+ * <p>
+ * Настраивает HTTP Basic аутентификацию, правила доступа к endpoints,
+ * отключает CSRF, настраивает CORS и обработку ошибок аутентификации/авторизации.
+ * </p>
+ */
 @Configuration
 @RequiredArgsConstructor
 public class WebSecurityConfig {
@@ -31,7 +38,13 @@ public class WebSecurityConfig {
             "/error"
     };
 
-
+    /**
+     * Настраивает цепочку фильтров безопасности.
+     *
+     * @param http объект конфигурации HTTP безопасности
+     * @return настроенная цепочка фильтров
+     * @throws Exception если возникла ошибка конфигурации
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -57,11 +70,23 @@ public class WebSecurityConfig {
         return http.build();
     }
 
+    /**
+     * Создаёт бин для кодирования паролей через BCrypt.
+     *
+     * @return {@link PasswordEncoder} с алгоритмом BCrypt
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Создаёт бин для аутентификации.
+     *
+     * @param authenticationConfiguration конфигурация аутентификации
+     * @return {@link AuthenticationManager}
+     * @throws Exception если возникла ошибка
+     */
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration authenticationConfiguration) throws Exception {
