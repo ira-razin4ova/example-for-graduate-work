@@ -19,7 +19,8 @@ import org.springframework.security.web.SecurityFilterChain;
  * Конфигурация безопасности Spring Security.
  * <p>
  * Настраивает HTTP Basic аутентификацию, правила доступа к endpoints,
- * отключает CSRF, настраивает CORS и обработку ошибок аутентификации/авторизации.
+ * открывает доступ к Swagger-документации, отключает CSRF, настраивает CORS
+ * и обработку ошибок аутентификации/авторизации.
  * </p>
  */
 @Configuration
@@ -52,6 +53,11 @@ public class WebSecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(AUTH_WHITELIST).permitAll()
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/ads/me").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/ads/**", "/comments/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/**").hasAnyRole("USER", "ADMIN")

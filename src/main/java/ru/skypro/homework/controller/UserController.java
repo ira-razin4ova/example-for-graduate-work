@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -15,11 +14,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.homework.config.UserDetailsServiceImpl;
 import ru.skypro.homework.dto.user.NewPasswordRequestDto;
 import ru.skypro.homework.dto.user.UpdateUser;
 import ru.skypro.homework.dto.user.UserDto;
 import ru.skypro.homework.service.UserService;
+
+import java.io.IOException;
 
 /**
  * Контроллер для управления пользователями.
@@ -113,8 +113,9 @@ public class UserController {
     /**
      * Обновляет аватар авторизованного пользователя.
      *
-     * @param image       файл изображения (JPEG/PNG)
+     * @param image       файл изображения (JPEG/PNG/GIF)
      * @param userDetails данные авторизованного пользователя
+     * @throws IOException если не удалось сохранить аватар
      */
     @Operation(summary = "Обновить аватар пользователя")
     @ApiResponses({
@@ -128,8 +129,9 @@ public class UserController {
             @RequestPart("image") MultipartFile image,
 
             @Parameter(hidden = true)
-            @AuthenticationPrincipal UserDetails userDetails
-    ) {
+            @AuthenticationPrincipal UserDetails userDetails) throws IOException {
+
+        userService.updateAvatar(image, userDetails);
         return ResponseEntity.ok().build();
     }
 }

@@ -40,6 +40,9 @@ public class AdServiceTest {
     private UserService userService;
 
     @Mock
+    private ImageService imageService;
+
+    @Mock
     private UserDetails userDetails;
 
     @InjectMocks
@@ -123,13 +126,13 @@ public class AdServiceTest {
 
         @Test
         @DisplayName("Успешное создание нового объявления")
-        void createAd_Success_ReturnsAdDto() {
+        void createAd_Success_ReturnsAdDto() throws java.io.IOException {
             when(adMapper.toEntity(createOrUpdateAdDto)).thenReturn(testAd);
             when(userService.checkUser(TEST_EMAIL)).thenReturn(author);
             when(adRepository.save(testAd)).thenReturn(testAd);
             when(adMapper.toDto(testAd)).thenReturn(adDto);
 
-            AdDto result = adService.createAd(createOrUpdateAdDto, userDetails);
+            AdDto result = adService.createAd(createOrUpdateAdDto, userDetails, null);
 
             assertNotNull(result);
             assertEquals(adDto, result);
@@ -169,7 +172,7 @@ public class AdServiceTest {
                     () -> adService.getAdBuId(AD_ID)
             );
 
-            assertEquals("Неправильный идентификатор комментария", exception.getMessage());
+            assertEquals("Неправильный идентификатор объявления", exception.getMessage());
             verifyNoInteractions(adMapper);
         }
 

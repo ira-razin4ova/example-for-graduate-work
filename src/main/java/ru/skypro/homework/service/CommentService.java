@@ -103,7 +103,7 @@ public class CommentService {
     public void deleteComment(Integer idAd, Integer idComment, UserDetails userDetails) {
         Comment comment = commentRepository.findById(idComment).
                 orElseThrow(() -> new EntityNotFoundException("Неправильный идентификатор комментария"));
-        if (comment.getAd().equals(idAd)) {
+        if (!comment.getAd().getId().equals(idAd)) {
             throw new EntityNotFoundException("Неправильный идентификатор объявления");
         }
         SecurityUtils.checkModifyPermission(comment.getAuthor(), userDetails);
