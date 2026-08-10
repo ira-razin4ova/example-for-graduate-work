@@ -15,6 +15,16 @@ public record AdsDto(
         @Schema(description = "Список объявлений")
         List<AdDto> results
 ) {
+    /**
+     * Создаёт DTO из списка объявлений.
+     * <p>
+     * Если список равен {@code null}, он заменяется пустым списком,
+     * чтобы избежать {@code NullPointerException}.
+     * </p>
+     *
+     * @param results список объявлений (может быть {@code null})
+     * @return {@link AdsDto} с количеством и списком объявлений
+     */
     public static AdsDto of(List<AdDto> results) {
         List<AdDto> saveResults = (results != null) ? results : List.of();
         return new AdsDto(saveResults.size(), saveResults);
