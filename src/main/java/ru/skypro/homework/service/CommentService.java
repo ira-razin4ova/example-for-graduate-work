@@ -48,7 +48,7 @@ public class CommentService {
                 .map(commentMapper::toDto)
                 .toList();
 
-        return new CommentsDto(commentList.size(), commentsDto);
+        return CommentsDto.of(commentsDto);
     }
 
     /**

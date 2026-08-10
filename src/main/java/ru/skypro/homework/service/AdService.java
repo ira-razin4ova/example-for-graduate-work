@@ -43,7 +43,7 @@ public class AdService {
     public AdsDto getListAd() {
         List<Ad> adList = adRepository.findAll();
         List<AdDto> adDto = adList.stream().map(adMapper::toDto).toList();
-        return new AdsDto(adDto.size(), adDto);
+        return AdsDto.of(adDto);
     }
 
     /**
@@ -126,7 +126,7 @@ public class AdService {
     public AdsDto getListAdUserAuth(UserDetails userDetails) {
         List<Ad> adList = adRepository.findAllByAuthorEmail(userDetails.getUsername());
         List<AdDto> adDto = adList.stream().map(adMapper::toDto).toList();
-        return new AdsDto(adDto.size(), adDto);
+        return AdsDto.of(adDto);
     }
 
     /**

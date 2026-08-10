@@ -15,4 +15,8 @@ public record AdsDto(
         @Schema(description = "Список объявлений")
         List<AdDto> results
 ) {
+    public static AdsDto of(List<AdDto> results) {
+        List<AdDto> saveResults = (results != null) ? results : List.of();
+        return new AdsDto(saveResults.size(), saveResults);
+    }
 }

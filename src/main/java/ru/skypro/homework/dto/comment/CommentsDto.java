@@ -15,5 +15,9 @@ public record CommentsDto(
         @Schema(description = "Список комментариев")
         List<CommentDto> results
 ) {
+    public static CommentsDto of (List <CommentDto> results) {
+        List<CommentDto> saveResult = (results != null) ? results : List.of();
+        return new CommentsDto(saveResult.size(), saveResult);
+    }
 }
 

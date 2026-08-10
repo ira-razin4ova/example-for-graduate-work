@@ -35,7 +35,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-
     private final ImageService imageService;
 
     /**
@@ -86,7 +85,7 @@ public class UserService {
      * Меняет пароль авторизованного пользователя.
      *
      * @param newPasswordRequestDto запрос с текущим и новым паролем
-     * @param userDetails          данные авторизованного пользователя
+     * @param userDetails           данные авторизованного пользователя
      * @throws AccessDeniedException       если email не совпадает с авторизованным
      * @throws InvalidOldPasswordException если текущий пароль неверен
      */
@@ -111,12 +110,12 @@ public class UserService {
      *
      * @param image       новый файл аватара
      * @param userDetails данные авторизованного пользователя
-     * @throws AccessDeniedException     если email не совпадает с авторизованным
-     * @throws IOException               если не удалось сохранить файл
-     * @throws EntityNotFoundException   если пользователь не найден
+     * @throws AccessDeniedException   если email не совпадает с авторизованным
+     * @throws IOException             если не удалось сохранить файл
+     * @throws EntityNotFoundException если пользователь не найден
      */
-    public void updateAvatar (MultipartFile image, UserDetails userDetails) throws IOException {
-        User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(()-> new EntityNotFoundException("Пользователь не найден"));
+    public void updateAvatar(MultipartFile image, UserDetails userDetails) throws IOException {
+        User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
 
         if (!user.getEmail().equals(userDetails.getUsername())) {
             throw new AccessDeniedException("Вы не можете изменить чужие данные");
