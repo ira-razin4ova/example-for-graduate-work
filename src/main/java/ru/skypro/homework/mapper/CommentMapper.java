@@ -16,12 +16,18 @@ public interface CommentMapper {
 
     /**
      * Преобразует DTO создания комментария в сущность.
+     * <p>
+     * Поля {@code id}, {@code author} и {@code createdAt} не заполняются —
+     * они устанавливаются в {@link ru.skypro.homework.service.CommentService}
+     * или автоматически при сохранении (см. {@link Comment#onPrePersist()}).
+     * </p>
      *
      * @param comment DTO с текстом комментария
      * @return новая сущность {@link Comment}
      */
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "author", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
     Comment toEntity(CreateOrUpdateComment comment);
 
     /**

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,9 @@ import ru.skypro.homework.dto.ad.AdsDto;
 import ru.skypro.homework.dto.ad.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ad.ExtendedAd;
 import ru.skypro.homework.service.AdService;
+import ru.skypro.homework.service.ImageService;
+
+import java.io.IOException;
 
 
 /**
@@ -31,9 +35,11 @@ import ru.skypro.homework.service.AdService;
 @RestController
 @RequestMapping("/ads")
 @RequiredArgsConstructor
+@Tag(name = "Объявления", description = "API для работы с объявлениями")
 public class AdController {
 
     private final AdService adService;
+    private final ImageService imageService;
 
     /**
      * Возвращает список всех объявлений.
@@ -54,20 +60,22 @@ public class AdController {
      *
      * @param properties  данные объявления
      * @param userDetails данные авторизованного пользователя
-     * @param image       файл изображения
+     * @param image       файл изображения (необязательный)
      * @return созданное объявление
+     * @throws IOException если не удалось сохранить изображение
      */
     @Operation(summary = "Добавить объявление")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Объявление создано"),
+            @ApiResponse(responseCode = "400", description = "Некорректный файл изображения"),
             @ApiResponse(responseCode = "401", description = "Не авторизован")
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AdDto> addAd(
             @RequestPart("properties") @Valid CreateOrUpdateAd properties,
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestPart("image") MultipartFile image) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(adService.createAd(properties,userDetails));
+            @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
+        return ResponseEntity.status(HttpStatus.CREATED).body(adService.createAd(properties,userDetails, image));
     }
 
     /**
@@ -151,11 +159,13 @@ public class AdController {
     }
 
     /**
-     * Обновляет изображение объявления.
+     * Обновляет изображение объявления (только автор или администратор).
      *
-     * @param id    ID объявления
-     * @param image новый файл изображения
-     * @return обновлённое изображение
+     * @param id          ID объявления
+     * @param image       новый файл изображения
+     * @param userDetails данные авторизованного пользователя
+     * @return обновлённое изображение в виде байтов
+     * @throws IOException если не удалось сохранить изображение
      */
     @Operation(summary = "Обновить картинку объявления")
     @ApiResponses({
@@ -167,7 +177,16 @@ public class AdController {
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<byte[]> updateImage(
             @Parameter(description = "ID объявления") @PathVariable Integer id,
-            @RequestPart("image") MultipartFile image) {
-        return ResponseEntity.ok().build();
+            @RequestPart("image") MultipartFile image,
+            @AuthenticationPrincipal UserDetails userDetails) throws IOException {
+        byte[] imageBytes = imageService.updateImage(id, image, userDetails);
+
+        MediaType contentType = image.getContentType() != null
+                ? MediaType.parseMediaType(image.getContentType())
+                : MediaType.IMAGE_JPEG;
+
+        return ResponseEntity.ok()
+                .contentType(contentType)
+                .body(imageBytes);
     }
 }

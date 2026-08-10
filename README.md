@@ -7,8 +7,9 @@
 - Регистрация и аутентификация пользователей (Basic Auth)
 - Управление объявлениями: создание, редактирование, удаление, просмотр
 - Комментирование объявлений
-- Загрузка аватаров и изображений объявлений
+- Загрузка и обновление изображений объявлений (JPEG/PNG/GIF) и аватаров пользователей
 - Ролевая модель: USER (обычный пользователь) и ADMIN (полный доступ)
+- Swagger UI с настройкой HTTP Basic Auth
 
 ## Стек технологий
 
@@ -72,19 +73,19 @@ http://localhost:8080/swagger-ui.html
 | GET    | `/users/me`          | Информация о себе         |
 | PATCH  | `/users/me`          | Обновить профиль          |
 | POST   | `/users/set_password`| Сменить пароль            |
-| PATCH  | `/users/me/image`    | Обновить аватар           |
+| PATCH  | `/users/me/image`    | Обновить аватар (multipart/form-data, JPEG/PNG/GIF) |
 
 ### Объявления
 
-| Метод  | URL              | Описание                    |
-|--------|------------------|-----------------------------|
-| GET    | `/ads`           | Все объявления              |
-| GET    | `/ads/me`        | Мои объявления              |
-| GET    | `/ads/{id}`      | Детали объявления           |
-| POST   | `/ads`           | Создать объявление          |
-| PATCH  | `/ads/{id}`      | Обновить объявление         |
-| DELETE | `/ads/{id}`      | Удалить объявление          |
-| PATCH  | `/ads/{id}/image`| Обновить изображение        |
+| Метод  | URL              | Описание                              |
+|--------|------------------|---------------------------------------|
+| GET    | `/ads`           | Все объявления                        |
+| GET    | `/ads/me`        | Мои объявления                        |
+| GET    | `/ads/{id}`      | Детали объявления                     |
+| POST   | `/ads`           | Создать объявление (multipart, опционально image) |
+| PATCH  | `/ads/{id}`      | Обновить объявление                   |
+| DELETE | `/ads/{id}`      | Удалить объявление                    |
+| PATCH  | `/ads/{id}/image`| Обновить изображение (multipart, JPEG/PNG/GIF) |
 
 ### Комментарии
 
@@ -94,6 +95,18 @@ http://localhost:8080/swagger-ui.html
 | POST   | `/ads/{id}/comments`          | Добавить комментарий   |
 | PATCH  | `/ads/{adId}/comments/{id}`   | Обновить комментарий   |
 | DELETE | `/ads/{adId}/comments/{id}`   | Удалить комментарий    |
+
+## Конфигурация путей для файлов
+
+В `application.properties` задаются директории для хранения:
+
+```properties
+images.dir.path=images      # директория для картинок объявлений
+avatars.dir.path=avatars    # директория для аватаров пользователей
+```
+
+По умолчанию файлы сохраняются в папки `images/` и `avatars/` в рабочей директории приложения.
+Имена файлов формируются как `{id}.{расширение}` (например, `1.png`).
 
 ## Структура проекта
 
@@ -320,6 +333,64 @@ sequenceDiagram
         CM-->>CS: CommentDto
         CS-->>CC: CommentDto
         CC-->>C: 201 Created (CommentDto)
+    end
+```
+
+### Обновление аватара пользователя
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant UC as UserController
+    participant US as UserService
+    participant IS as ImageService
+    participant UR as UserRepository
+
+    C->>UC: PATCH /users/me/image (MultipartFile)
+    UC->>US: updateAvatar(image, userDetails)
+    US->>UR: findByEmail(email)
+    UR-->>US: User
+    US->>IS: userPhotoUser(user.id, image)
+    IS->>IS: validate content type (JPEG/PNG/GIF)
+    IS->>IS: save to avatars.dir.path/{id}.{ext}
+    IS-->>US: path (e.g. "avatars/1.png")
+    US->>US: user.setImage(path)
+    US->>UR: save(user)
+    UR-->>US: saved
+    US-->>UC: void
+    UC-->>C: 200 OK
+```
+
+### Обновление изображения объявления
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant AdC as AdController
+    participant IS as ImageService
+    participant AR as AdRepository
+    participant SU as SecurityUtils
+
+    C->>AdC: PATCH /ads/{id}/image (MultipartFile)
+    AdC->>IS: updateImage(id, image, userDetails)
+    IS->>AR: findById(id)
+    AR-->>IS: Ad
+    IS->>SU: checkModifyPermission(author, userDetails)
+    alt Нет прав
+        SU-->>IS: throw AccessDeniedException
+        IS-->>AdC: 403 Forbidden
+        AdC-->>C: 403 Forbidden
+    else Права есть
+        SU-->>IS: ok
+        alt Старое изображение существует
+            IS->>IS: delete old file
+        end
+        IS->>IS: save new to images.dir.path/{id}.{ext}
+        IS->>IS: ad.setImage(path)
+        IS->>AR: save(ad)
+        AR-->>IS: saved
+        IS-->>AdC: image bytes + content-type
+        AdC-->>C: 200 OK (image bytes)
     end
 ```
 

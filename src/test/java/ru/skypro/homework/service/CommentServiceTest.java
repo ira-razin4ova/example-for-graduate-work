@@ -176,7 +176,6 @@ public class CommentServiceTest {
 
             when(commentRepository.findById(COMMENT_ID)).thenReturn(Optional.of(testComment));
             when(adRepository.findById(AD_ID)).thenReturn(Optional.of(testAd));
-            when(commentMapper.toEntity(createOrUpdateCommentDto)).thenReturn(testComment);
             when(commentRepository.save(testComment)).thenReturn(testComment);
             when(commentMapper.toDto(testComment)).thenReturn(commentDto);
 

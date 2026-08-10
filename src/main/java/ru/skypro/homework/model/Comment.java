@@ -30,9 +30,19 @@ public class Comment {
     @Column(name = "text", nullable = false)
     private String text;
 
-    /** Дата создания комментария в миллисекундах (устанавливается автоматически). */
+    /** Дата создания комментария в миллисекундах (устанавливается автоматически при сохранении). */
     @Column(name = "created_at")
-    private Long createdAt = System.currentTimeMillis();
+    private Long createdAt;
+
+    /**
+     * Устанавливает дату создания перед первым сохранением, если она ещё не задана.
+     */
+    @PrePersist
+    public void onPrePersist() {
+        if (this.createdAt == null) {
+            this.createdAt = System.currentTimeMillis();
+        }
+    }
 
     /** Автор комментария. */
     @ManyToOne (fetch = FetchType.LAZY)

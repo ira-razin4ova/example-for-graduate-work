@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.user.NewPasswordRequestDto;
 import ru.skypro.homework.dto.user.UpdateUser;
 import ru.skypro.homework.dto.user.UserDto;
@@ -17,12 +18,14 @@ import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.model.user.User;
 import ru.skypro.homework.repository.UserRepository;
 
+import java.io.IOException;
+
 
 /**
  * Сервис для работы с пользователями.
  * <p>
  * Содержит бизнес-логику по управлению пользователями: получение информации,
- * обновление данных и смена пароля.
+ * обновление данных, смена пароля и загрузка аватара.
  * </p>
  */
 @Service
@@ -32,6 +35,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final ImageService imageService;
 
     /**
      * Находит пользователя по email или выбрасывает исключение.
@@ -81,7 +85,7 @@ public class UserService {
      * Меняет пароль авторизованного пользователя.
      *
      * @param newPasswordRequestDto запрос с текущим и новым паролем
-     * @param userDetails          данные авторизованного пользователя
+     * @param userDetails           данные авторизованного пользователя
      * @throws AccessDeniedException       если email не совпадает с авторизованным
      * @throws InvalidOldPasswordException если текущий пароль неверен
      */
@@ -99,5 +103,27 @@ public class UserService {
 
         user.setPassword(passwordEncoder.encode(newPasswordRequestDto.newPassword()));
         userRepository.save(user);
+    }
+
+    /**
+     * Обновляет аватар авторизованного пользователя.
+     *
+     * @param image       новый файл аватара
+     * @param userDetails данные авторизованного пользователя
+     * @throws AccessDeniedException   если email не совпадает с авторизованным
+     * @throws IOException             если не удалось сохранить файл
+     * @throws EntityNotFoundException если пользователь не найден
+     */
+    public void updateAvatar(MultipartFile image, UserDetails userDetails) throws IOException {
+        User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
+
+        if (!user.getEmail().equals(userDetails.getUsername())) {
+            throw new AccessDeniedException("Вы не можете изменить чужие данные");
+        }
+
+        String photoPathName = imageService.userPhotoUser(user.getId(), image);
+        user.setImage(photoPathName);
+        userRepository.save(user);
+
     }
 }
