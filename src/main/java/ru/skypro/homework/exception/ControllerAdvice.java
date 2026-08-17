@@ -51,10 +51,9 @@ public class ControllerAdvice {
             default -> String.format("Параметр '%s' имеет некорректный тип данных", ex.getName());
         };
 
-        AnswerErrorDto error = new AnswerErrorDto(
+        AnswerErrorDto error =  AnswerErrorDto.of(
                 HttpStatus.BAD_REQUEST.name(),
-                message,
-                LocalDateTime.now()
+                message
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
@@ -69,10 +68,9 @@ public class ControllerAdvice {
                     schema = @Schema(implementation = AnswerErrorDto.class))
     )
     public ResponseEntity<AnswerErrorDto> handleReadableException(HttpMessageNotReadableException ex) {
-        AnswerErrorDto error = new AnswerErrorDto(
+        AnswerErrorDto error =  AnswerErrorDto.of(
                 HttpStatus.BAD_REQUEST.name(),
-                "Malformed JSON Request",
-                LocalDateTime.now()
+                "Malformed JSON Request"
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
@@ -86,10 +84,9 @@ public class ControllerAdvice {
                     schema = @Schema(implementation = AnswerErrorDto.class))
     )
     public ResponseEntity<AnswerErrorDto> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
-        AnswerErrorDto error = new AnswerErrorDto(
+        AnswerErrorDto error =  AnswerErrorDto.of(
                 HttpStatus.METHOD_NOT_ALLOWED.name(),
-                "Method Not Allowed",
-                LocalDateTime.now()
+                "Method Not Allowed"
         );
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(error);
     }
@@ -102,10 +99,9 @@ public class ControllerAdvice {
                     schema = @Schema(implementation = AnswerErrorDto.class))
     )
     public ResponseEntity<AnswerErrorDto> handleMissingParam(MissingServletRequestParameterException ex) {
-        AnswerErrorDto error = new AnswerErrorDto(
+        AnswerErrorDto error =  AnswerErrorDto.of(
                 HttpStatus.BAD_REQUEST.name(),
-                "Missing Parameter",
-                LocalDateTime.now()
+                "Missing Parameter"
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
@@ -118,10 +114,9 @@ public class ControllerAdvice {
                     schema = @Schema(implementation = AnswerErrorDto.class))
     )
     public ResponseEntity<AnswerErrorDto> handleNoResourceFound(NoResourceFoundException ex) {
-        AnswerErrorDto error = new AnswerErrorDto(
+        AnswerErrorDto error =  AnswerErrorDto.of(
                 HttpStatus.NOT_FOUND.name(),
-                "Resource Not Found",
-                LocalDateTime.now()
+                "Resource Not Found"
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
@@ -134,10 +129,9 @@ public class ControllerAdvice {
                     schema = @Schema(implementation = AnswerErrorDto.class))
     )
     public ResponseEntity<AnswerErrorDto> handleUserAlreadyExists(UserAlreadyExistsException e) {
-        AnswerErrorDto error = new AnswerErrorDto(
-                "USER_ALREADY_EXISTS",           // code
-                e.getMessage(),                  // message
-                LocalDateTime.now()              // timestamp
+        AnswerErrorDto error = AnswerErrorDto.of(
+                "USER_ALREADY_EXISTS",
+                e.getMessage()
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
@@ -150,10 +144,9 @@ public class ControllerAdvice {
                     schema = @Schema(implementation = AnswerErrorDto.class))
     )
     public ResponseEntity<AnswerErrorDto> handleEntityNotFound(EntityNotFoundException e) {
-        AnswerErrorDto error = new AnswerErrorDto(
+        AnswerErrorDto error = AnswerErrorDto.of(
                 "ENTITY_NOT_FOUND",
-                e.getMessage(),
-                LocalDateTime.now()
+                e.getMessage()
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
@@ -162,10 +155,9 @@ public class ControllerAdvice {
     public ResponseEntity<AnswerErrorDto> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest request) {
 
 
-        AnswerErrorDto error = new AnswerErrorDto(
+        AnswerErrorDto error = AnswerErrorDto.of(
                 HttpStatus.BAD_REQUEST.name(),
-                ex.getMessage(),
-                LocalDateTime.now()
+                ex.getMessage()
         );
 
         return ResponseEntity.badRequest().body(error);
@@ -175,10 +167,9 @@ public class ControllerAdvice {
     public ResponseEntity<AnswerErrorDto> handleBadCredentials(
             BadCredentialsException ex, HttpServletRequest request) {
 
-        AnswerErrorDto error = new AnswerErrorDto(
+        AnswerErrorDto error = AnswerErrorDto.of(
                 HttpStatus.UNAUTHORIZED.name(),
-                "Неверный логин или пароль",
-                LocalDateTime.now()
+                "Неверный логин или пароль"
         );
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
@@ -188,10 +179,9 @@ public class ControllerAdvice {
     public ResponseEntity<AnswerErrorDto> handleInvalidOldPassword(
             InvalidOldPasswordException ex, HttpServletRequest request) {
 
-        AnswerErrorDto error = new AnswerErrorDto(
+        AnswerErrorDto error = AnswerErrorDto.of(
                 HttpStatus.BAD_REQUEST.name(),
-                ex.getMessage(),
-                LocalDateTime.now()
+                ex.getMessage()
         );
 
         return ResponseEntity.badRequest().body(error);
@@ -201,10 +191,9 @@ public class ControllerAdvice {
     public ResponseEntity<AnswerErrorDto> handleAccessDenied(
             AccessDeniedException ex, HttpServletRequest request) {
 
-        AnswerErrorDto error = new AnswerErrorDto(
+        AnswerErrorDto error = AnswerErrorDto.of(
                 HttpStatus.FORBIDDEN.name(),
-                "Недостаточно прав для выполнения операции",
-                LocalDateTime.now()
+                "Недостаточно прав для выполнения операции"
         );
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
@@ -218,10 +207,9 @@ public class ControllerAdvice {
                     schema = @Schema(implementation = AnswerErrorDto.class))
     )
     public ResponseEntity<AnswerErrorDto> handleUserCreationException(UserCreationException ex) {
-        AnswerErrorDto error = new AnswerErrorDto(
+        AnswerErrorDto error = AnswerErrorDto.of(
                 HttpStatus.INTERNAL_SERVER_ERROR.name(),
-                ex.getMessage(),
-                LocalDateTime.now()
+                ex.getMessage()
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }

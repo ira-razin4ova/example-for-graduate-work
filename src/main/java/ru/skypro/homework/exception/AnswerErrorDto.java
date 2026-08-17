@@ -1,6 +1,7 @@
 package ru.skypro.homework.exception;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.time.LocalDateTime;
 
 /**
@@ -18,6 +19,11 @@ public record AnswerErrorDto(
         @Schema(description = "Сообщение об ошибке", example = "Пользователь с таким именем уже существует")
         String message,
 
+
         @Schema(description = "Время возникновения ошибки", example = "2026-07-13T14:30:00", type = "string", format = "date-time")
         LocalDateTime timestamp
-) {}
+) {
+    public static AnswerErrorDto of(String code, String message) {
+        return new AnswerErrorDto(code, message, LocalDateTime.now());
+    }
+}
