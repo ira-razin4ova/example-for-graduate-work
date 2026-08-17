@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.exception.ExceptionConstants;
 import ru.skypro.homework.model.Ad;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.util.SecurityUtils;
@@ -64,7 +65,7 @@ public class ImageService {
     public String saveImage(Integer id, MultipartFile file) throws IOException {
         String contentType = file.getContentType();
         if (contentType == null || !List.of("image/jpeg", "image/png", "image/gif").contains(contentType)) {
-            throw new ValidationException("Это не картинка! Грузи только jpeg, png или gif.");
+            throw new ValidationException(ExceptionConstants.INVALID_IMAGE_FORMAT);
         }
 
         String fileName = id + "." + getExtension(file.getOriginalFilename());
@@ -91,7 +92,7 @@ public class ImageService {
      * @throws IOException                                   если не удалось сохранить файл
      */
     public byte[] updateImage(Integer id, MultipartFile file, UserDetails userDetails) throws IOException {
-        Ad ad = adRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Объявление не найдено")) ;
+        Ad ad = adRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(ExceptionConstants.AD_NOT_FOUND)) ;
 
         SecurityUtils.checkModifyPermission(ad.getAuthor(), userDetails);
 
@@ -124,7 +125,7 @@ public class ImageService {
     public String userPhotoUser(Integer id, MultipartFile image) throws IOException {
         String contentType = image.getContentType();
         if (contentType == null || !List.of("image/jpeg", "image/png", "image/gif").contains(contentType)) {
-            throw new ValidationException("Это не картинка! Грузи только jpeg, png или gif.");
+            throw new ValidationException(ExceptionConstants.INVALID_IMAGE_FORMAT);
         }
 
         String fileName = id + "." + getExtension(image.getOriginalFilename());

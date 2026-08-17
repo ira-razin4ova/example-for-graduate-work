@@ -2,6 +2,7 @@ package ru.skypro.homework.service.impl;
 
 import org.springframework.transaction.annotation.Transactional;
 import ru.skypro.homework.dto.auth.ResponseAnswerRegisterDto;
+import ru.skypro.homework.exception.ExceptionConstants;
 import ru.skypro.homework.exception.UserCreationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -69,7 +70,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public ResponseAnswerRegisterDto register(Register register) {
         if (userRepository.existsByEmail(register.username())) {
-            throw new UserAlreadyExistsException("Пользователь с таким именем уже существует");
+            throw new UserAlreadyExistsException(ExceptionConstants.USER_ALREADY_EXIST);
         }
 
         User user = User.builder()
@@ -85,7 +86,7 @@ public class AuthServiceImpl implements AuthService {
 
         Integer userId = userRepository.findByEmail(register.username())
                 .orElseThrow(() -> new UserCreationException(
-                        "Не удалось получить ID созданного пользователя"
+                        ExceptionConstants.USER_CREATED_NOT_FOUND
                 ))
                 .getId();
 

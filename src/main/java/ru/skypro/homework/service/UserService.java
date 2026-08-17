@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.user.NewPasswordRequestDto;
 import ru.skypro.homework.dto.user.UpdateUser;
 import ru.skypro.homework.dto.user.UserDto;
+import ru.skypro.homework.exception.ExceptionConstants;
 import ru.skypro.homework.exception.InvalidOldPasswordException;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.model.user.User;
@@ -45,7 +46,7 @@ public class UserService {
      * @throws jakarta.persistence.EntityNotFoundException если пользователь не найден
      */
     public User checkUser(String userName) {
-        return userRepository.findByEmail(userName).orElseThrow(() -> new EntityNotFoundException("user not found"));
+        return userRepository.findByEmail(userName).orElseThrow(() -> new EntityNotFoundException(ExceptionConstants.USER_NOT_FOUND));
     }
 
     /**
@@ -63,7 +64,7 @@ public class UserService {
 
         User user = checkUser(userDetails.getUsername());
         if (!user.getEmail().equals(userDetails.getUsername())) {
-            throw new AccessDeniedException("Вы не можете изменить чужие данные");
+            throw new AccessDeniedException(ExceptionConstants.ACCESS_DENIED);
         }
         userMapper.updateFromDto(updateUser, user);
         return userMapper.toDto(user);
@@ -94,11 +95,11 @@ public class UserService {
         User user = checkUser(userDetails.getUsername());
 
         if (!user.getEmail().equals(userDetails.getUsername())) {
-            throw new AccessDeniedException("Вы не можете изменить чужие данные");
+            throw new AccessDeniedException(ExceptionConstants.ACCESS_DENIED);
         }
 
         if (!passwordEncoder.matches(newPasswordRequestDto.currentPassword(), user.getPassword())) {
-            throw new InvalidOldPasswordException("Неверный текущий пароль");
+            throw new InvalidOldPasswordException(ExceptionConstants.INVALID_OLD_PASSWORD);
         }
 
         user.setPassword(passwordEncoder.encode(newPasswordRequestDto.newPassword()));
@@ -115,10 +116,10 @@ public class UserService {
      * @throws EntityNotFoundException если пользователь не найден
      */
     public void updateAvatar(MultipartFile image, UserDetails userDetails) throws IOException {
-        User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
+        User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(() -> new EntityNotFoundException(ExceptionConstants.USER_NOT_FOUND));
 
         if (!user.getEmail().equals(userDetails.getUsername())) {
-            throw new AccessDeniedException("Вы не можете изменить чужие данные");
+            throw new AccessDeniedException(ExceptionConstants.ACCESS_DENIED);
         }
 
         String photoPathName = imageService.userPhotoUser(user.getId(), image);

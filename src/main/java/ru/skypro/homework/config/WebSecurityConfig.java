@@ -31,12 +31,14 @@ public class WebSecurityConfig {
 
     private static final String[] AUTH_WHITELIST = {
             "/swagger-resources/**",
-            "/swagger-ui.html",
             "/v3/api-docs",
             "/webjars/**",
             "/login",
             "/register",
-            "/error"
+            "/error",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-ui.html"
     };
 
     /**
@@ -53,17 +55,13 @@ public class WebSecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(AUTH_WHITELIST).permitAll()
-                        .requestMatchers(
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/swagger-ui.html"
-                        ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/ads/me").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/ads/**", "/comments/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/users/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/ads", "/ads/**", "/comments/**", "/users/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/ads/**", "/comments/**", "/users/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/ads/**", "/comments/**").hasAnyRole("USER", "ADMIN")
+                        .anyRequest().authenticated()
+//                        .requestMatchers(HttpMethod.GET, "/users/**").hasAnyRole("USER", "ADMIN")
+//                        .requestMatchers(HttpMethod.POST, "/ads", "/ads/**", "/comments/**", "/users/**").hasAnyRole("USER", "ADMIN")
+//                        .requestMatchers(HttpMethod.PATCH, "/ads/**", "/comments/**", "/users/**").hasAnyRole("USER", "ADMIN")
+//                        .requestMatchers(HttpMethod.DELETE, "/ads/**", "/comments/**").hasAnyRole("USER", "ADMIN")
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) ->

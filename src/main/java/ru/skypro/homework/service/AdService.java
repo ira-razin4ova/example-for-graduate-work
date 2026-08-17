@@ -10,6 +10,7 @@ import ru.skypro.homework.dto.ad.AdDto;
 import ru.skypro.homework.dto.ad.AdsDto;
 import ru.skypro.homework.dto.ad.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ad.ExtendedAd;
+import ru.skypro.homework.exception.ExceptionConstants;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.model.Ad;
 import ru.skypro.homework.repository.AdRepository;
@@ -84,7 +85,7 @@ public class AdService {
      */
     public ExtendedAd getAdBuId(Integer id) {
         return adMapper.toExtendedDto(adRepository.findById(id).
-                orElseThrow(() -> new EntityNotFoundException("Неправильный идентификатор объявления")));
+                orElseThrow(() -> new EntityNotFoundException(ExceptionConstants.AD_NOT_FOUND)));
     }
 
     /**
@@ -137,7 +138,7 @@ public class AdService {
      * @throws jakarta.persistence.EntityNotFoundException если объявление не найдено
      */
     public Ad checkAd(Integer id) {
-        return adRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Неправильный идентификатор объявления"));
+        return adRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(ExceptionConstants.AD_NOT_FOUND));
     }
 
 }
