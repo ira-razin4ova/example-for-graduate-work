@@ -14,6 +14,8 @@ import ru.skypro.homework.model.Comment;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.util.SecurityUtils;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.util.List;
 
@@ -41,6 +43,7 @@ public class CommentService {
      * @param idAd ID объявления
      * @return {@link CommentsDto} со списком комментариев
      */
+    @Cacheable(value = "comments", key = "#adId")
     public CommentsDto getListComments(Integer idAd) {
         checkAdBuId(idAd);
         List<Comment> commentList = commentRepository.findAllByAd_Id(idAd);
@@ -59,6 +62,7 @@ public class CommentService {
      * @param userDetails данные авторизованного пользователя
      * @return {@link CommentDto} созданного комментария
      */
+    @CacheEvict (value = "comments", key = "#adId")
     @Transactional
     public CommentDto createComment(Integer idAd, CreateOrUpdateComment dto, UserDetails userDetails) {
         Ad ad = adRepository.findById(idAd)
@@ -80,6 +84,7 @@ public class CommentService {
      * @param userDetails данные авторизованного пользователя
      * @return {@link CommentDto} с обновлёнными данными
      */
+    @CacheEvict (value = "comments", key = "#adId")
     @Transactional
     public CommentDto updateComment(Integer idAd, Integer commentId, CreateOrUpdateComment dto, UserDetails userDetails) {
         Comment comment = commentRepository.findById(commentId)
@@ -99,6 +104,7 @@ public class CommentService {
      * @param idComment   ID комментария
      * @param userDetails данные авторизованного пользователя
      */
+    @CacheEvict (value = "comments", key = "#adId")
     @Transactional
     public void deleteComment(Integer idAd, Integer idComment, UserDetails userDetails) {
         Comment comment = commentRepository.findById(idComment).

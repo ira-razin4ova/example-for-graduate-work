@@ -2,6 +2,7 @@ package ru.skypro.homework.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,8 @@ import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.model.Ad;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.util.SecurityUtils;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,6 +43,7 @@ public class AdService {
      *
      * @return {@link AdsDto} со списком объявлений и их количеством
      */
+    @Cacheable("ads")
     public AdsDto getListAd() {
         List<Ad> adList = adRepository.findAll();
         List<AdDto> adDto = adList.stream().map(adMapper::toDto).toList();
@@ -60,6 +64,10 @@ public class AdService {
      * @throws IOException если не удалось сохранить изображение
      */
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "ads", allEntries = true),
+            @CacheEvict(value = "user_ads", key = "#userDetails.username")
+    })
     public AdDto createAd(CreateOrUpdateAd dto, UserDetails userDetails, MultipartFile image) throws IOException {
 
         Ad ad = adMapper.toEntity(dto);
@@ -82,6 +90,7 @@ public class AdService {
      * @return {@link ExtendedAd} с детальной информацией
      * @throws jakarta.persistence.EntityNotFoundException если объявление не найдено
      */
+    @Cacheable(value = "ad_details", key = "#id")
     public ExtendedAd getAdBuId(Integer id) {
         return adMapper.toExtendedDto(adRepository.findById(id).
                 orElseThrow(() -> new EntityNotFoundException("Неправильный идентификатор объявления")));
@@ -93,6 +102,11 @@ public class AdService {
      * @param id          ID объявления
      * @param userDetails данные авторизованного пользователя
      */
+    @Caching(evict = {
+            @CacheEvict(value = "ads", allEntries = true),
+            @CacheEvict(value = "user_ads", key = "#userDetails.username"),
+            @CacheEvict(value = "ad_details", key = "#id")
+    })
     @Transactional
     public void deleteAd(Integer id, UserDetails userDetails) {
         Ad ad = checkAd(id);
@@ -108,6 +122,11 @@ public class AdService {
      * @param userDetails данные авторизованного пользователя
      * @return {@link AdDto} с обновлёнными данными
      */
+    @Caching(evict = {
+            @CacheEvict(value = "ads", allEntries = true),
+            @CacheEvict(value = "user_ads", key = "#userDetails.username"),
+            @CacheEvict(value = "ad_details", key = "#id")
+    })
     @Transactional
     public AdDto updateAd(Integer id, CreateOrUpdateAd dto, UserDetails userDetails) {
         Ad ad = checkAd(id);
@@ -123,6 +142,7 @@ public class AdService {
      * @param userDetails данные авторизованного пользователя
      * @return {@link AdsDto} с объявлениями пользователя
      */
+    @Cacheable(value = "user_ads", key = "#userDetails.username")
     public AdsDto getListAdUserAuth(UserDetails userDetails) {
         List<Ad> adList = adRepository.findAllByAuthorEmail(userDetails.getUsername());
         List<AdDto> adDto = adList.stream().map(adMapper::toDto).toList();

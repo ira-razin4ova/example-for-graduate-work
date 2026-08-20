@@ -3,6 +3,8 @@ package ru.skypro.homework.service;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.AccessDeniedException;
 
 import org.springframework.security.core.userdetails.UserDetails;
@@ -56,6 +58,7 @@ public class UserService {
      * @return {@link UserDto} с обновлёнными данными
      * @throws org.springframework.security.access.AccessDeniedException если email из запроса не совпадает с авторизованным
      */
+    @CacheEvict (value = "user_ads", key = "#userDetails.username")
     @Transactional
     public UserDto updateUser(
             UserDetails userDetails,
@@ -75,6 +78,7 @@ public class UserService {
      * @param userDetails данные авторизованного пользователя
      * @return {@link UserDto} с информацией о пользователе
      */
+    @Cacheable (value = "user_ads", key = "#userDetails.username")
     @Transactional
     public UserDto infoAuthUser(UserDetails userDetails) {
         User user = checkUser(userDetails.getUsername());
@@ -114,6 +118,7 @@ public class UserService {
      * @throws IOException             если не удалось сохранить файл
      * @throws EntityNotFoundException если пользователь не найден
      */
+    @CacheEvict (value = "user_ads", key = "#userDetails.username")
     public void updateAvatar(MultipartFile image, UserDetails userDetails) throws IOException {
         User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
 

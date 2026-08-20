@@ -14,5 +14,15 @@ services:
       - grad_work_db_data:/var/lib/postgresql/data
     restart: unless-stopped
 
+  grad-work-redis:
+    image: redis:alpine
+    container_name: grad_work_redis        # Уникальное имя контейнера для Redis
+    ports:
+      - "6379:6379"                        # СЛЕВА порт твоего компьютера (6379), СПРАВА стандартный порт Redis (6379)
+    volumes:
+      - grad_work_redis_data:/data         # Персистентное хранилище для данных Redis
+    restart: unless-stopped
+
 volumes:
-  grad_work_db_data:                       # Уникальное имя тома для хранения данных
+  grad_work_db_data:
+  grad_work_redis_data:
