@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.skypro.homework.dto.comment.CommentDto;
 import ru.skypro.homework.dto.comment.CommentsDto;
 import ru.skypro.homework.dto.comment.CreateOrUpdateComment;
+import ru.skypro.homework.exception.ExceptionConstants;
 import ru.skypro.homework.mapper.CommentMapper;
 import ru.skypro.homework.model.Ad;
 import ru.skypro.homework.model.Comment;
@@ -66,7 +67,7 @@ public class CommentService {
     @Transactional
     public CommentDto createComment(Integer idAd, CreateOrUpdateComment dto, UserDetails userDetails) {
         Ad ad = adRepository.findById(idAd)
-                .orElseThrow(() -> new EntityNotFoundException("Объявление не найдено"));
+                .orElseThrow(() -> new EntityNotFoundException(ExceptionConstants.AD_NOT_FOUND));
 
         Comment comment = commentMapper.toEntity(dto);
         comment.setAd(ad);
@@ -88,7 +89,7 @@ public class CommentService {
     @Transactional
     public CommentDto updateComment(Integer idAd, Integer commentId, CreateOrUpdateComment dto, UserDetails userDetails) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new EntityNotFoundException("Неправильный идентификатор комментария"));
+                .orElseThrow(() -> new EntityNotFoundException(ExceptionConstants.COMMENT_NOT_FOUND));
         checkAdBuId(idAd);
         SecurityUtils.checkModifyPermission(comment.getAuthor(), userDetails);
         comment.setText(dto.text());
@@ -108,9 +109,9 @@ public class CommentService {
     @Transactional
     public void deleteComment(Integer idAd, Integer idComment, UserDetails userDetails) {
         Comment comment = commentRepository.findById(idComment).
-                orElseThrow(() -> new EntityNotFoundException("Неправильный идентификатор комментария"));
+                orElseThrow(() -> new EntityNotFoundException(ExceptionConstants.COMMENT_NOT_FOUND));
         if (!comment.getAd().getId().equals(idAd)) {
-            throw new EntityNotFoundException("Неправильный идентификатор объявления");
+            throw new EntityNotFoundException(ExceptionConstants.AD_NOT_FOUND);
         }
         SecurityUtils.checkModifyPermission(comment.getAuthor(), userDetails);
         commentRepository.delete(comment);
@@ -123,6 +124,6 @@ public class CommentService {
      * @throws jakarta.persistence.EntityNotFoundException если объявление не найдено
      */
     private void checkAdBuId(Integer idAd) {
-        adRepository.findById(idAd).orElseThrow(() -> new EntityNotFoundException("Объявление не найдено"));
+        adRepository.findById(idAd).orElseThrow(() -> new EntityNotFoundException(ExceptionConstants.AD_NOT_FOUND));
     }
 }

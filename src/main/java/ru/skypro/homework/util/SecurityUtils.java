@@ -2,6 +2,7 @@ package ru.skypro.homework.util;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetails;
+import ru.skypro.homework.exception.ExceptionConstants;
 import ru.skypro.homework.model.user.User;
 
 /**
@@ -27,7 +28,7 @@ public final class SecurityUtils {
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
         if (!isOwner && !isAdmin) {
-            throw new AccessDeniedException("Нет прав на изменение данного ресурса");
+            throw new AccessDeniedException(ExceptionConstants.CHECK_MODIFY_PERMISSION);
         }
     }
 }
