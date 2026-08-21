@@ -33,7 +33,7 @@ public final class ExceptionConstants {
     public static final String RESOURCE_NOT_FOUND = "Resource Not Found";
 
     /** Пользователь с указанным email уже зарегистрирован. */
-    public static final String USER_ALREADY_EXIST = "Пользователь уже существует";
+    public static final String USER_ALREADY_EXIST = "Пользователь с таким именем уже существует";
 
     /** Не удалось получить ID только что созданного пользователя. */
     public static final String USER_CREATED_NOT_FOUND = "Не удалось получить ID созданного пользователя";
@@ -42,7 +42,7 @@ public final class ExceptionConstants {
     public static final String AD_NOT_FOUND = "Объявление не найдено";
 
     /** Комментарий с указанным ID не найден. */
-    public static final String COMMENT_NOT_FOUND = "Комментарий не найдено";
+    public static final String COMMENT_NOT_FOUND = "Комментарий не найден";
 
     /** Загруженный файл не является поддерживаемым форматом изображения. */
     public static final String INVALID_IMAGE_FORMAT = "Это не картинка! Грузи только jpeg, png или gif.";

@@ -119,9 +119,7 @@
                 <configuration>
                     <source>17</source>
                     <target>17</target>
-                    <compilerArgs>
-                        <arg>-parameters</arg>
-                    </compilerArgs>
+                    <parameters>true</parameters> <!-- Включает сохранение имен параметров для кэша -->
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>

@@ -210,7 +210,7 @@ public class CommentServiceTest {
                     () -> commentService.updateComment(AD_ID, COMMENT_ID, createOrUpdateCommentDto, userDetails)
             );
 
-            assertEquals("Неправильный идентификатор комментария", exception.getMessage());
+            assertEquals("Комментарий не найден", exception.getMessage());
             verify(adRepository, never()).findById(any());
         }
     }
@@ -247,7 +247,7 @@ public class CommentServiceTest {
                     () -> commentService.deleteComment(AD_ID, COMMENT_ID, userDetails)
             );
 
-            assertEquals("Неправильный идентификатор комментария", exception.getMessage());
+            assertEquals("Комментарий не найден", exception.getMessage());
             verify(commentRepository, never()).delete(any());
         }
     }

@@ -58,10 +58,6 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/ads/me").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/ads/**", "/comments/**").permitAll()
                         .anyRequest().authenticated()
-//                        .requestMatchers(HttpMethod.GET, "/users/**").hasAnyRole("USER", "ADMIN")
-//                        .requestMatchers(HttpMethod.POST, "/ads", "/ads/**", "/comments/**", "/users/**").hasAnyRole("USER", "ADMIN")
-//                        .requestMatchers(HttpMethod.PATCH, "/ads/**", "/comments/**", "/users/**").hasAnyRole("USER", "ADMIN")
-//                        .requestMatchers(HttpMethod.DELETE, "/ads/**", "/comments/**").hasAnyRole("USER", "ADMIN")
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) ->

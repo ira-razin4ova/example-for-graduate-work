@@ -108,7 +108,7 @@ public class UserServiceTest {
                     () -> userService.checkUser(TEST_EMAIL)
             );
 
-            assertEquals("user not found", exception.getMessage());
+            assertEquals("Пользователь не найден", exception.getMessage());
             verify(userRepository, times(1)).findByEmail(TEST_EMAIL);
         }
     }
