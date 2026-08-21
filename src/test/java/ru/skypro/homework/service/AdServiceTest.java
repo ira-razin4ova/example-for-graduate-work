@@ -172,7 +172,7 @@ public class AdServiceTest {
                     () -> adService.getAdBuId(AD_ID)
             );
 
-            assertEquals("Неправильный идентификатор объявления", exception.getMessage());
+            assertEquals("Объявление не найдено", exception.getMessage());
             verifyNoInteractions(adMapper);
         }
 

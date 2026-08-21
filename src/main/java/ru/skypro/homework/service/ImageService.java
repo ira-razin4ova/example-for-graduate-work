@@ -21,12 +21,20 @@ import java.util.List;
  * Сервис для работы с изображениями.
  * <p>
  * Обеспечивает сохранение и обновление изображений объявлений и аватаров пользователей
- * в файловой системе. Принимает только изображения форматов JPEG, PNG или GIF.
+ * в файловой системе. Принимает только изображения форматов JPEG, PNG, GIF или WebP.
  * </p>
  */
 @Service
 @RequiredArgsConstructor
 public class ImageService {
+
+    /** Поддерживаемые MIME-типы изображений: JPEG, PNG, GIF, WebP. */
+    private static final List<String> ALLOWED_IMAGE_TYPES = List.of(
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/webp"
+    );
 
     private final AdRepository adRepository;
 
@@ -57,23 +65,24 @@ public class ImageService {
      * </p>
      *
      * @param id   ID объявления (используется как имя файла)
-     * @param file загружаемый файл изображения
+     * @param image загружаемый файл изображения
      * @return путь к сохранённому файлу
      * @throws jakarta.validation.ValidationException если формат файла не поддерживается
      * @throws IOException                            если не удалось сохранить файл
      */
-    public String saveImage(Integer id, MultipartFile file) throws IOException {
-        String contentType = file.getContentType();
-        if (contentType == null || !List.of("image/jpeg", "image/png", "image/gif").contains(contentType)) {
+    public String saveImage(Integer id, MultipartFile image) throws IOException {
+        String contentType = image.getContentType();
+
+        if (contentType == null || !ALLOWED_IMAGE_TYPES.contains(contentType)) {
             throw new ValidationException(ExceptionConstants.INVALID_IMAGE_FORMAT);
         }
 
-        String fileName = id + "." + getExtension(file.getOriginalFilename());
+        String fileName = id + "." + getExtension(image.getOriginalFilename());
 
         Path filePath = Path.of(imagesDir, fileName);
         Files.createDirectories(filePath.getParent());
         Files.deleteIfExists(filePath);
-        Files.write(filePath, file.getBytes());
+        Files.write(filePath, image.getBytes());
         return filePath.toString();
     }
 
@@ -84,27 +93,33 @@ public class ImageService {
      * </p>
      *
      * @param id          ID объявления
-     * @param file        новый файл изображения
+     * @param image        новый файл изображения
      * @param userDetails данные авторизованного пользователя
      * @return содержимое нового изображения в виде массива байт
      * @throws jakarta.persistence.EntityNotFoundException  если объявление не найдено
      * @throws org.springframework.security.access.AccessDeniedException если у пользователя нет прав
      * @throws IOException                                   если не удалось сохранить файл
      */
-    public byte[] updateImage(Integer id, MultipartFile file, UserDetails userDetails) throws IOException {
+    public byte[] updateImage(Integer id, MultipartFile image, UserDetails userDetails) throws IOException {
         Ad ad = adRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(ExceptionConstants.AD_NOT_FOUND)) ;
 
         SecurityUtils.checkModifyPermission(ad.getAuthor(), userDetails);
+
+        String contentType = image.getContentType();
+
+        if (contentType == null || !ALLOWED_IMAGE_TYPES.contains(contentType)) {
+            throw new ValidationException(ExceptionConstants.INVALID_IMAGE_FORMAT);
+        }
 
         if (ad.getImage() != null && !ad.getImage().isEmpty()) {
             Files.deleteIfExists(Path.of(ad.getImage()));
         }
 
-        String fileName = id + "." + getExtension(file.getOriginalFilename());
+        String fileName = id + "." + getExtension(image.getOriginalFilename());
 
         Path filePath = Path.of(imagesDir, fileName);
         Files.createDirectories(filePath.getParent());
-        Files.write(filePath, file.getBytes());
+        Files.write(filePath, image.getBytes());
         ad.setImage(filePath.toString());
         adRepository.save(ad);
         return Files.readAllBytes(filePath);
@@ -124,7 +139,8 @@ public class ImageService {
      */
     public String userPhotoUser(Integer id, MultipartFile image) throws IOException {
         String contentType = image.getContentType();
-        if (contentType == null || !List.of("image/jpeg", "image/png", "image/gif").contains(contentType)) {
+
+        if (contentType == null || !ALLOWED_IMAGE_TYPES.contains(contentType)) {
             throw new ValidationException(ExceptionConstants.INVALID_IMAGE_FORMAT);
         }
 

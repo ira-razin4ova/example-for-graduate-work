@@ -30,6 +30,10 @@ import java.io.IOException;
  * Содержит бизнес-логику по управлению пользователями: получение информации,
  * обновление данных, смена пароля и загрузка аватара.
  * </p>
+ * <p>
+ * Информация об авторизованном пользователе кэшируется в Redis (кэш {@code user}, ключ — email).
+ * Кэш очищается при обновлении профиля, аватара, а также при любых изменениях объявлений пользователя.
+ * </p>
  */
 @Service
 @RequiredArgsConstructor
@@ -53,13 +57,16 @@ public class UserService {
 
     /**
      * Обновляет данные авторизованного пользователя.
+     * <p>
+     * Кэш {@code user} для данного пользователя очищается автоматически.
+     * </p>
      *
      * @param userDetails данные авторизованного пользователя
      * @param updateUser  новые данные для обновления
      * @return {@link UserDto} с обновлёнными данными
      * @throws org.springframework.security.access.AccessDeniedException если email из запроса не совпадает с авторизованным
      */
-    @CacheEvict (value = "user_ads", key = "#userDetails.username")
+    @CacheEvict (value = "user", key = "#userDetails.username")
     @Transactional
     public UserDto updateUser(
             UserDetails userDetails,
@@ -75,11 +82,15 @@ public class UserService {
 
     /**
      * Возвращает информацию об авторизованном пользователе.
+     * <p>
+     * Результат кэшируется в Redis (кэш {@code user}, ключ — email) на 10 минут.
+     * Кэш очищается при обновлении профиля, аватара или любых изменениях объявлений.
+     * </p>
      *
      * @param userDetails данные авторизованного пользователя
      * @return {@link UserDto} с информацией о пользователе
      */
-    @Cacheable (value = "user_ads", key = "#userDetails.username")
+    @Cacheable (value = "user", key = "#userDetails.username")
     @Transactional
     public UserDto infoAuthUser(UserDetails userDetails) {
         User user = checkUser(userDetails.getUsername());
@@ -112,6 +123,9 @@ public class UserService {
 
     /**
      * Обновляет аватар авторизованного пользователя.
+     * <p>
+     * Кэш {@code user} для данного пользователя очищается автоматически.
+     * </p>
      *
      * @param image       новый файл аватара
      * @param userDetails данные авторизованного пользователя
@@ -119,7 +133,7 @@ public class UserService {
      * @throws IOException             если не удалось сохранить файл
      * @throws EntityNotFoundException если пользователь не найден
      */
-    @CacheEvict (value = "user_ads", key = "#userDetails.username")
+    @CacheEvict (value = "user", key = "#userDetails.username")
     public void updateAvatar(MultipartFile image, UserDetails userDetails) throws IOException {
         User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(() -> new EntityNotFoundException(ExceptionConstants.USER_NOT_FOUND));
 
